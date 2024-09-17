@@ -1,0 +1,2 @@
+Sep 17: Made a very basic website with a placeholder for the chessboard. Site
+uses npm, express, and ejs.
