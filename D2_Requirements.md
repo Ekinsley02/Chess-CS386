@@ -60,7 +60,7 @@ Customer segment: People with an interest in chess
 
 ## 6. Use cases
 ### 6.1. Use case diagram
-**![](https://ibb.co/HrGmVFL)**
+**![](https://i.ibb.co/rZ5nm7K/image-2024-09-29-220848407.png)**
 
 
 ### 6.2. Use case descriptions
