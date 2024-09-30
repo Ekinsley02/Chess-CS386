@@ -172,36 +172,58 @@ Report error back to user
 
 # 7. User stories
 
-**User story 1**:  “As a Smartphone owner, I want to download the DontPanic app so that I can stay informed.”
-Priority: 1
-Estimated Hours: 40
 
-**User story 2**:  “As a user, I want to receive push notifications so that I am informed immediately of issues.”
-Priority: 2
-Estimated Hours: 8
+**User story 1**:  “As a player, I want to play a game of chess against another player so that I can enjoy a competitive match.”
+Priority: HIGH
+Estimated Hours: 8 hours
 
-**User story 3**:  “As A non-smartphone user, I want to be able to receive SMS notifications so that I can stay informed”
-Priority: 7
-Estimated Hours:
 
-**User story 4**:  “As A non-smartphone user, I want to be able to sign up online so that I can stay informed.”
-Priority: 6
-Estimated Hours: 20
+**User story 2**:  “As a beginner chess player, I want tutorials and tips within the game so that I can learn the rules and improve my skills.”
+Priority: MEDIUM
+Estimated Hours: 5 hours
 
-**User story 5**:  “As a user, I want to be able to customize my notifications so that I only get informed about things I care about.”
-Priority: 3
-Estimated Hours: 13
 
-**User story 6**:  “As a user, I want to have a simple UI so that I can easily navigate the app”
-Priority: 4
-Estimated Hours: 13
+**User story 3**:  “As a player, I want to move my pieces by clicking and dragging so that the gameplay feels intuitive and user-friendly.”
+Priority: HIGH
+Estimated Hours: 3 hours
 
-**User story 7**:  “As a user, I want to choose how many times I am notified so that I do not get annoyed with the app.”
-Priority: 5
-Estimated Hours: 8
 
-**User story 8**:  “As a user, I want to receive sources so that I can investigate issues further”
-Priority: 8
-Estimated Hours:  5
+**User story 4**:  “As a competitive player, I want to play against a basic AI opponent so that I can practice my strategies without needing another human player.”
+Priority: MEDIUM
+Estimated Hours: 8 hours
 
-## 8. Trello
+
+**User story 5**:  “As a player, I want the option to restart the game at any time so that I can play again without closing and reopening the program.”
+Priority: MEDIUM
+Estimated Hours: 2 hours
+
+
+**User story 6**:  “As a player, I want to see a history of my moves during the game so that I can analyze my decisions and learn from my mistakes.”
+Priority: MEDIUM
+Estimated Hours: 5 hours
+
+
+**User story 7**:  “As a player, I want the game to highlight valid moves when I select a piece so that I can easily see my options and make better decisions.”
+Priority: HIGH
+Estimated Hours: 5 hours
+
+
+**User story 8**:  “As a player, I want to have an option to undo my last move so that I can correct mistakes without losing progress.”
+Priority: MEDIUM
+Estimated Hours:  3 hours
+
+
+**User story 9**:  “As a player, I want to receive notifications when the game ends with a victory or draw so that I know the result of the match immediately.”
+Priority: LOW
+Estimated Hours:  2 hours
+
+
+**User story 10**:  “As a player, I want the chessboard and pieces to be visually appealing so that I have an enjoyable and engaging experience while playing.”
+Priority: LOW
+Estimated Hours:  5 hours
+
+
+## 8. Issue Tracker
+[ upload screenshot of issues when all are implemented ]
+https://github.com/Ekinsley02/Chess-CS386/issues 
+
