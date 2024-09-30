@@ -31,16 +31,22 @@ Customer segment: People with an interest in chess
 
 ## 2. Stakeholders
 
-**Users**: Commuters, Parents, People in locations at risk of natural or human-caused disaster, and Property Owners.
-**Competitors**: CodeRED, Disaster Alert.
-**Detractors**: People very cautious of allowing an app to see their location.
-**Developers**: Mason Rodgers, Chris Keefe, Richard Sansom, Brandon Click.
+
+**Users**: Casual Players, Chess Enthusiasts, Beginner Learners, Competitive Gamers, Coaches/Trainers, Children/Young Learners
+**Competitors**: www.chess.com , www.sparkChess.com , www.247chess.com, www.lichess.org 
+**Detractors**: Traditional chess players or people who don’t have an interest in chess
+**Developers**: Noah Carges, Elliott Kinsley, Tristen Calder, Ryan Todd, David Gold-Matejka
+
 
 ## 3. Functional requirements (features)
 
-- Personalization/Preferences: Being able to customize the information we receive from the app.
-- Ease of Use: Simple design that is use for everyone to use and understand
-- Basic Traffic Info: Most people in cities don't have many concerns in their everyday life. So basic traffic info was important for those people
+
+- Personalization/Preferences:Being able to customize your board and piece colors
+- Ease of Use: Simple menu and board system that isn’t confusing to players.
+- Chess online with friends: Being able to have the ability to play chess anywhere with anyone.
+- Chess against AI:: Being able to play chess against an artificial intelligence.
+- Optimization: The chess app will have manual memory allocation so the game will be well optimized.
+
 
 ## 4. Non-functional requirements
 - Availability
