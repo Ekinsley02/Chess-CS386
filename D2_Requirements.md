@@ -1,11 +1,9 @@
 
 # Requirements
 
-# Replace with OWN Info
-
-_Group 06 – “[Don't Panic!]”\
-Date and location: Feb 23, 2020\
-Group Members: Chris Keefe, Mason Rodgers, Brandon Click, Drew Sansom_
+_Group 09 – “[Chess with Friends!]”\
+Date and location: Sep. 29, 2024\
+Group Members: Noah Carges, Elliott Kinsley, Tristen Calder, Ryan Todd, David Gold-Matejka_
 
 ## 1. Positioning
 ### 1.1 Problem statement
@@ -224,6 +222,7 @@ Estimated Hours:  5 hours
 
 
 ## 8. Issue Tracker
-[ upload screenshot of issues when all are implemented ]
+**![](https://i.ibb.co/xHFyYmW/image-2024-09-29-215834767.png)**
+
 https://github.com/Ekinsley02/Chess-CS386/issues 
 
