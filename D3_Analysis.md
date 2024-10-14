@@ -1,4 +1,4 @@
-# Requirements
+# Analysis
 
 _Group 09 – “[UChess!]”\
 Date and location: Oct. 13, 2024\
