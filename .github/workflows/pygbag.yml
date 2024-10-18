@@ -12,9 +12,9 @@ jobs:
     - name: Checkout
       run: |
             python -m pip install pygbag
-            python -m pygbag --build $GITHUB_WORKSPACE/main.py
+            python -m pygbag --build $GITHUB_WORKSPACE/Game/main.py
     - name : "Upload to GitHub pages branch gh-pages"
-      uses: JamesIves/github-pages-deploy-action@4.1.7
+      uses: Ekinsley02/github-pages-deploy-action@4.1.7
       with:
         branch: gh-pages
         folder: build/web
