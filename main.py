@@ -268,8 +268,6 @@ if __name__ == "__main__":
             for row in chess_highlights:
                 print(" ".join(row))
 
-            # You don't need to call main() here directly.
-            # Pass the board data to asyncio.run
             asyncio.run(main(chess_board, chess_sides, chess_highlights, c_engine))
         else:
             print("Failed to receive initial board data.")
