@@ -21,4 +21,4 @@ UChess **users** go to UChess.com and will then be prompted to _login_ in to the
 
 Our program is not object-oriented, so it is hard for us to create a class diagram. However, if it were object-oriented, this is how it would look:
 
-![](https://i.ibb.co/tKszZmZ/Screenshot-2024-10-13-180912.png)
+![](https://i.ibb.co/LCJ1GRJ/Screenshot-2024-10-25-160812.png)
