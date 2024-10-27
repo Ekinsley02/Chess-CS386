@@ -1,0 +1,16 @@
+name: C Program Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Install build tools
+        run: sudo apt-get install gcc
+
+      - name: Run tests
+        run: bash test_output.sh
