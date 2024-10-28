@@ -88,6 +88,8 @@ jobs:
         run: cat test_log.txt
 ```
 
+[Chessboard Screenshot2]https://ibb.co/4WdM3yK)
+
 ## Deployment
 
  - Ensure all prerequisites are installed
