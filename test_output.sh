@@ -23,12 +23,10 @@ expect {
         send "e\r"          # Column input for e4
         expect {
             "Check!" {
-                puts "Valid move test passed."
-            }
+                puts "Valid move test passed." }
             "Invalid move, please try again" {
                 puts "Valid move test failed. Unexpected output."
-                exit 1
-            }
+                exit 1 }
             default {
                 puts "Unexpected output after moving: $expect_out(buffer)"
                 exit 1
