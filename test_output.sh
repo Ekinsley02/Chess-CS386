@@ -7,15 +7,13 @@ exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
 spawn ./chess_output
 
 # Wait for the initial board output
-expect {
-    "R G B Q K B G R" {
-        # After initial board, simulate user input
-        send "move e2 e4\r"
-        send "move e7 e5\r"
-        expect "*"
-        send "exit\r"  # Adjust based on your program's exit condition
-    }
-}
+expect "R G B Q K B G R"
+send "move e2 e4\r"
+expect "*"
+send "move e7 e5\r"
+expect "*"
+send "exit\r"
+
 
 # Wait for the process to complete
 expect eof
