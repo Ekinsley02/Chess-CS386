@@ -1,7 +1,7 @@
 #include "chessUtility.h"
 
 // Function to output the board and sides to subprocess (Python)
-void outputBoard(ChessBoardType **board)
+void outputBoard(ChessBoardType **board, int gameCondition)
    {
    // initialize functions/variables
       
@@ -47,6 +47,9 @@ void outputBoard(ChessBoardType **board)
       printf("\n");
       fflush(stdout);
       }
+   
+   
+   printf("%d\n", gameCondition);
    }
 
 int main()
@@ -75,7 +78,7 @@ int main()
    setbuf(stdout, NULL);
    
    // Output initial board
-   outputBoard( board );
+   outputBoard( board, gameCondition );
    
    currentTurn = 'P';
    
@@ -99,9 +102,6 @@ int main()
         
          gameCondition = 2;
          }
-
-      printf( "%d\n", gameCondition );
-      fflush(stdout);
       
       if( gameCondition == 1 || gameCondition == 2 )
          {
@@ -138,7 +138,7 @@ int main()
          fflush(stdout);
          }
          
-      outputBoard(board);
+      outputBoard( board, gameCondition );
 
       scanf( "%d %d", &end_row, &end_col );
 
@@ -166,7 +166,7 @@ int main()
             }
          }
       
-      outputBoard(board);
+      outputBoard( board, gameCondition );
       
       currentState = SELECTING;
       }
