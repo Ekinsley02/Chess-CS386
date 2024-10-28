@@ -1,16 +1,24 @@
-name: C Program Tests
+name: Chess Application Tests
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out the repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install build tools
-        run: sudo apt-get install gcc
+      - name: Set up Expect environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
 
-      - name: Run tests
-        run: bash test_output.sh
+      - name: Run tests with Expect
+        run: |
+          chmod +x test_output.sh
+          ./test_output.sh | tee test_log.txt  # Capture output for visibility in GitHub logs
+
+      - name: Display Test Log
+        run: cat test_log.txt
