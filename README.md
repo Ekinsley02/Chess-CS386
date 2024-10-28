@@ -26,37 +26,37 @@ Powershell or a similar terminal for running commands
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development environment running
+A step by step guide to get a development environment running
 
-Say what the step will be
-
-```
 Download Zip file from {https://github.com/Ekinsley02/Chess-CS386}
 
-Go to: UChess GitHub Repository
-Use the "Code" button and select "Download ZIP" from the dropdown.
-Select "Download ZIP" from the dropdown menu.
-
 ```
+1) Go to: UChess GitHub Repository
+2) Use the "Code" button and select "Download ZIP" from the dropdown.
+3) Select "Download ZIP" from the dropdown menu.
+```
+
 Extract the Downloaded ZIP File
+```
 Locate the downloaded ZIP file on your device.
 Extract it to a preferred location. Remember the installation path for later deployment.
 
 ```
 Open Windows PowerShell and Navigate to the Project Directory
-
+```
 Change to the directory where the project files are located
 Command: cd .\[Specific File Path]\UChess
-
 ```
-Compile the Source Code Using GCC
 
+Compile the Source Code Using GCC
+```
 Use GCC to compile the main files and create an executable named "chess"
 Command: gcc -Wall main.c chessUtility.c pieceUtility.c -o chess
-
+```
 ```
 
 See demo video below for a example compile and test run
+```
 
 ## Running the tests
 
@@ -80,9 +80,9 @@ Give an example
 
 ## Deployment
 
-Ensure all prerequisites are installed
-Compile the release build
-Upload and run on the server or designated platform
+ - Ensure all prerequisites are installed
+ - Compile the release build
+ - Upload and run on the server or designated platform
 
 ## Built With
 
