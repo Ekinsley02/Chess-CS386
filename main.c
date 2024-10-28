@@ -102,7 +102,7 @@ int main()
 
       printf( "%d", gameCondition );
       fflush(stdout);
-
+      
       if( gameCondition == 1 || gameCondition == 2 )
          {
          
@@ -112,10 +112,6 @@ int main()
          
 
       scanf( "%d %d", &start_row, &start_col );
-
-      // Corrected variable names
-      printf("Received move: %d %d\n", start_row, start_col);
-      fflush(stdout);
          
       currentType = board[start_row][start_col].type;
 
