@@ -2187,5 +2187,161 @@ void highlightKnight( ChessBoardType **board, char currentTurn, int initialRow, 
 
 
 
+/*
+Description: highlights the potential attack positions for rook
+Input: chessboard, currentRow, currentCol, initial row, initial collomn
+ firstEnemyRow, firstEnemyCol
+Output: highlighted location
+Dependancies: NONE
+*/
+
+void highlightRook(ChessBoardType **board, char currentTurn, int initialRow, int initialCol, char highlightFlag )
+   {
+   // initialize functions/variables
+   int wkgIndex;
+         
+   char oppositeSide = determineOppositeSide( currentTurn );
+
+   // Check upwards of the rook starting one ahead
+   for( wkgIndex = initialRow - 1; wkgIndex >= 0; wkgIndex-- )
+      {
+
+      // Stop searching if a piece from the current turn is found
+      if( board[ wkgIndex ][ initialCol ].side == currentTurn )
+         {
+      
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+      
+         board[wkgIndex][initialCol].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgIndex, initialCol ) ) )
+         {
+      
+         board[wkgIndex][initialCol].highlight = true;
+         }
+
+      // Check if the current search index hits an opponent
+      if( board[ wkgIndex ][ initialCol ].side == oppositeSide )
+         {
+      
+         break;
+         }
+      }
+
+   // Check downwards of the rook starting one behind
+   for( wkgIndex = initialRow + 1; wkgIndex < BOARD_SIZE; wkgIndex++ )
+      {
+         
+      if( board[ wkgIndex ][ initialCol].side == currentTurn )
+         {
+      
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+      
+         board[ wkgIndex ][ initialCol ].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgIndex, initialCol ) ) )
+         {
+      
+         board [wkgIndex ][ initialCol ].highlight = true;
+         }
+
+      // Check if the current search index hits an opponent
+      if( board[ wkgIndex ][ initialCol ].side == oppositeSide )
+         {
+      
+         break;
+         }
+      }
+
+   // Check to the right of the rook starting one to the right
+   for( wkgIndex = initialCol + 1; wkgIndex < BOARD_SIZE; wkgIndex++ )
+      {
+         
+      if( board[ initialRow ][ wkgIndex ].side == currentTurn )
+         {
+            
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+
+         board[ initialRow ][ wkgIndex ].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow, wkgIndex ) ) )
+         {
+      
+         board [initialRow ][ wkgIndex ].highlight = true;
+         }
+
+      // Check if the current search index hits an opponent
+      if( board[ initialRow ][ wkgIndex ].side == oppositeSide )
+         {
+      
+         break;
+         }
+      }
+
+   // Check to the left of the rook starting one to the left
+   for( wkgIndex = initialCol - 1; wkgIndex >= 0; wkgIndex-- )
+      {
+         
+      if( board[ initialRow ][ wkgIndex ].side == currentTurn )
+         {
+            
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+            
+         board[ initialRow ][ wkgIndex ].highlight = false;
+         }
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow, wkgIndex ) ) )
+         {
+         
+         board[ initialRow ][ wkgIndex ].highlight = true;
+         }
+
+      // Check if the current search index hits an opponent
+      if( board[ initialRow ][ wkgIndex ].side == oppositeSide )
+         {
+      
+         break;
+         }
+      }
+   }
+
+/*
+Description: moves the rook accordingly
+Input: chess board, current piece type, current turn,
+current row, current column   
+Output: Moved pawn piece
+Dependancies: checkIfValidPosition
+*/
+
+void pieceMoveHelper( ChessBoardType **board, int initialRow, int initialCol, int currentRow, int currentCol, char currentType, char currentTurn )
+  {
+     
+   board[ currentRow ][ currentCol ].type = currentType;
+   board[ currentRow ][ currentCol ].side = currentTurn;
+   board[ initialRow ][ initialCol ].type = 'X';
+   board[ initialRow ][ initialCol ].side = NON_PLAYER;
+  }
+
+
+
+
 
 
