@@ -100,7 +100,7 @@ int main()
          gameCondition = 2;
          }
 
-      printf( "%d\n", gameCondition );
+      printf( "%d", gameCondition );
       fflush(stdout);
 
       if( gameCondition == 1 || gameCondition == 2 )
