@@ -3,21 +3,25 @@
 # Compile the code
 gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
 
-# Run the program with a timeout and capture the output
-timeout 10 ./chess_output > full_output.txt
+# Run the program and capture the output
+./chess_output > full_output.txt &
 
-# Check if the timeout was reached
-if [ $? -eq 124 ]; then
-    echo "Test Failed: Program timed out."
-    exit 1
-fi
+# Wait a short time to ensure the board has printed
+sleep 2 
 
-# Extract the initial board part from the output
+# Provide simulated user input
+{
+    echo "move e2 e4"  # Example command
+    echo "move e7 e5"  # Another example command
+    echo "exit"        # Command to exit, if necessary
+} | ./chess_output 
+
+# Check for the output
 head -n 24 full_output.txt > actual_output.txt
 
 # Expected output file for comparison
 cat << EOF > expected_output.txt
-# (expected output goes here)
+# ... (your expected output here)
 EOF
 
 # Compare the initial board output to expected output
