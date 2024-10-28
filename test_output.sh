@@ -8,12 +8,14 @@ spawn ./chess_output
 
 # Wait for the initial board output
 expect "R G B Q K B G R"
+puts "Sending move e2 e4"
 send "move e2 e4\r"
 expect "*"
+puts "Sending move e7 e5"
 send "move e7 e5\r"
 expect "*"
+puts "Sending exit command"
 send "exit\r"
-
 
 # Wait for the process to complete
 expect eof
