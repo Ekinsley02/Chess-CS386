@@ -50,7 +50,7 @@ else
 fi
 
 # Check if the last line of the full output is 0 or 1
-last_line=$(tail -n 1 full_output.txt)
+last_line=$(tail -n 2 full_output.txt)
 if [[ "$last_line" == "0" || "$last_line" == "1" ]]; then
     echo "End check passed: Last line is $last_line."
     exit 0
