@@ -457,3 +457,327 @@ void displayChessBoard( ChessBoardType **board, int rows, int cols )
    displayBottomBoard();
    }
 
+/*
+Description: prints the upper half of the board, before the pieces.
+ Also determines which opperating system is used.
+Input: NONE
+Output: printed upper chess board
+Dependancies: NONE
+*/
+void displayTopBoard()
+   {
+   #ifdef OS_WINDOWS
+      
+      printf("+--------------------------------+\n");
+      printf("|                                |\n");
+      printf("|                                |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|  +--------------------------+  |\n");
+      printf("|  |                          |  |\n");
+      
+   #elif defined(OS_MAC)
+      
+      printf("┌--------------------------------┐\n");
+      printf("|                                |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|  ┌--------------------------┐  |\n");
+      printf("|  |                          |  |\n");
+      
+   #else
+      
+      printf("+--------------------------------+\n");
+      printf("|                                |\n");
+      printf("|                                |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|  +--------------------------+  |\n");
+      printf("|  |                          |  |\n");
+   #endif
+   }
+
+
+
+/*
+Description: displays the entire chess board.
+Input: given chess board
+Output: printed chess board
+Dependancies: NONE
+*/
+ChessBoardType **fillBoard( ChessBoardType **board)
+   {
+   
+      // initilaize functions/variables
+      int rowIndex, colIndex;
+
+      // create the initial boards layout
+      char initialPieces[] =
+      {
+       'R', 'G', 'B', 'Q', 'K', 'B', 'G', 'R',
+       'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+       'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X',
+       'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X',
+       'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X',
+       'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X',
+       'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+       'R', 'G', 'B', 'Q', 'K', 'B', 'G', 'R',
+      };
+
+   // fill the board with the appropriate types and NON player
+   for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
+      {
+
+      for( colIndex = 0; colIndex < BOARD_SIZE; colIndex++ )
+         {
+
+         board[ rowIndex ][ colIndex ].type = initialPieces[ rowIndex * BOARD_SIZE + colIndex ];
+         board[ rowIndex ][ colIndex ].side = NON_PLAYER;
+         board[ rowIndex ][ colIndex ].highlight = false;
+         board[ rowIndex ][ colIndex ].hasMoved = false;
+         board[ rowIndex ][ colIndex ].castlePos = false;
+         }
+
+      }
+
+   // determines the sides of every piece
+   determineSides( board );
+   return board;
+   }
+
+/*
+Description: highlights the potential attack positions based on the type
+Input: chessboard, givenRow, givenCol
+Output: highlighted location
+Dependancies: NONE
+*/
+void highlightAttack( ChessBoardType **board, int initialRow, int initialCol,
+                       char currentType, char currentTurn, char highlightFlag, int currentState, bool initialPawn )
+   {
+  
+   // check current battle state
+   if( currentState == PASSIVE || currentState == BOTH || currentState == SELECTING )
+      {
+
+      // checks if the flag is highlight
+      if( highlightFlag == HIGHLIGHT )
+         {
+            
+            switch( currentType )
+               {
+                  
+               case PAWN:
+                  if( currentTurn == 'P' )
+                     {
+                        
+                     if( initialRow > 0 && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol ) ) )
+                        {
+                           
+                        board[ initialRow - 1 ][ initialCol ].highlight = true;
+                        }
+                     // if it is the first move of pawn, highlight the next two
+                     if( initialPawn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 2, initialCol ) ) )
+                        {
+                        
+                        board[ initialRow - 2 ][ initialCol ].highlight = true;
+                        }
+                     }
+                  else if( currentTurn == 'O' )
+                     {
+                        
+                     if( initialRow < BOARD_SIZE - 1 && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol ) ) )
+                        {
+                           
+                        board[ initialRow + 1 ][ initialCol ].highlight = true;
+                        }
+                     // if it is the first move of pawn, highlight the next two
+                     if( initialPawn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 2, initialCol ) ) )
+                        {
+                           
+                        board[ initialRow + 2 ][ initialCol ].highlight = true;
+                        }
+                     }
+                  break;
+
+            case ROOK:
+
+               highlightRook( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case KNIGHT:
+
+               highlightKnight( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case BISHOP:
+
+               highlightBishop( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case QUEEN:
+
+               highlightBishop( board, currentTurn, initialRow, initialCol, highlightFlag );
+               highlightRook( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case KING:
+               highlightKing( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+            }
+         }
+
+      // checks if the flag is dehighlight
+      else if( highlightFlag == DEHIGHLIGHT ) 
+         {
+         switch( currentType )
+            {
+
+            case PAWN:
+               if(  currentTurn == 'P' )
+                  {
+                  
+                  if( initialRow > 0 )
+                     {
+                  
+                     board[ initialRow - 1 ][ initialCol ].highlight = false;
+                     }
+                  if( initialPawn )
+                     {
+                  
+                     board[ initialRow - 2 ][ initialCol ].highlight = false;
+                     }
+                  }
+               else if( currentTurn == 'O' )
+                  {
+                  
+                  if (initialRow < BOARD_SIZE - 1)
+                     {
+                  
+                     board[ initialRow + 1 ][ initialCol ].highlight = false;
+                     }
+                  if( initialPawn )
+                     {
+                  
+                     board[ initialRow + 2 ][ initialCol ].highlight = false;
+                     }
+                  }
+               break;
+
+            case ROOK:
+               highlightRook( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case KNIGHT:
+               highlightKnight( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case BISHOP:
+               highlightBishop( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case QUEEN:
+               highlightRook( board, currentTurn, initialRow, initialCol, highlightFlag );
+               highlightBishop( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+
+            case KING:
+               highlightKing( board, currentTurn, initialRow, initialCol, highlightFlag );
+               break;
+            }
+         }
+      }
+
+
+   if( currentState == BATTLE || currentState == BOTH )
+      {
+         
+      // checks if the flag is highlight
+      if( highlightFlag == HIGHLIGHT )
+         {
+            
+         switch( currentType )
+            {
+               
+            case PAWN:
+               if( currentTurn == 'P' && initialRow > 0 && initialCol >= 0 )
+                  {
+                  
+                  // check left edge pieces for battle highlighting
+                  if( !( checkEdgePieceLeft( board, initialCol ) ) && board[ initialRow - 1 ][ initialCol + 1 ].side == 'O' )
+                     {
+                     
+                     board[ initialRow - 1 ][ initialCol + 1 ].highlight = true;
+                     }
+                     
+                  // check left edge pieces for battle highlighting
+                  if( !( checkEdgePieceRight( board, initialCol ) ) && board[ initialRow - 1 ][ initialCol - 1 ].side == 'O' )
+                     {
+                  
+                     board[ initialRow - 1 ][ initialCol - 1 ].highlight = true;
+                     }
+                  }
+               else if( currentTurn == 'O' && initialRow < BOARD_SIZE - 1 && initialCol >= 0 )
+                  {
+                     
+                  // check left edge pieces for battle highlighting
+                  if( !(checkEdgePieceLeft( board, initialCol ) ) && board[ initialRow + 1 ][ initialCol + 1 ].side == 'P' )
+                     {
+                  
+                     board[ initialRow + 1 ][ initialCol + 1 ].highlight = true;
+                     }
+                     
+                  // check right edge pieces for battle highlighting
+                  if( !( checkEdgePieceRight( board, initialCol ) ) && board[ initialRow + 1 ][ initialCol - 1 ].side == 'P' )
+                     {
+                  
+                     board[ initialRow + 1 ][ initialCol - 1 ].highlight = true;
+                     }
+                  }
+               break;
+
+            }
+         }
+
+         // checks if the flag is dehighlight
+      else if( highlightFlag == DEHIGHLIGHT ) 
+         {
+         switch( currentType )
+            {
+
+            case PAWN:
+               if( currentTurn == 'P' && initialRow > 0 && initialCol >= 0 )
+                  {
+                  // check left edge pieces for battle highlighting
+                  if( !( checkEdgePieceLeft( board, initialCol ) ) && board[ initialRow - 1 ][ initialCol + 1 ].highlight )
+                     {
+                        
+                     board[ initialRow - 1 ][ initialCol + 1 ].highlight = false;
+                     }
+                     
+                  // check left edge pieces for battle highlighting
+                  if( !( checkEdgePieceRight( board, initialCol ) ) && board[ initialRow - 1 ][ initialCol - 1 ].highlight )
+                     {
+
+                     board[ initialRow - 1 ][ initialCol - 1 ].highlight = false;
+                     }
+                  }
+               // check left edge pieces for battle highlighting
+               else if( currentTurn == 'O' && initialRow < BOARD_SIZE - 1 && initialCol >= 0 )
+                  {
+                  
+                  if( !( checkEdgePieceLeft( board, initialCol ) ) && board[ initialRow + 1 ][ initialCol + 1 ].highlight )
+                     {
+                  
+                     board[ initialRow + 1 ][ initialCol + 1 ].highlight = false;
+                     }
+                     
+                  // check right edge pieces for battle highlighting
+                  if( !( checkEdgePieceRight( board, initialCol ) ) && board[ initialRow + 1 ][ initialCol - 1 ].highlight )
+                     {
+                  
+                     board[ initialRow + 1 ][ initialCol - 1 ].highlight = false;
+                     }
+                  }
+               break;
+            }
+         }
+      }
+   }
+
