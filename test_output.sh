@@ -29,11 +29,7 @@ expect {
                 exit 1 }
             default {
                 puts "Unexpected output after moving: $expect_out(buffer)"
-                exit 1
-            }
-        }
-    }
-}
+                exit 1 } } } }
 
 # Wait for the process to complete
 expect eof
@@ -75,8 +71,7 @@ P P P P P P P P
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-}
+0 0 0 0 0 0 0 0 }
 close $expected_output
 
 # Compare the initial board output to expected output
@@ -90,20 +85,18 @@ if {[catch {exec diff -w actual_output.txt expected_output.txt} result]} {
     set expected_output [open "expected_output.txt" "r"]
     puts [read expected_output]
     close expected_output
-    exit 1
-} else {
-    puts "Board layout test passed!"
-}
+    exit 1 } 
+else {
+    puts "Board layout test passed!" }
 
 # Check if the last line of the full output is 0 or 1
 set last_line [lindex [split $contents "\n"] end]
 if {$last_line == "0" || $last_line == "1"} {
     puts "End check passed: Last line is $last_line."
-    exit 0
-} else {
+    exit 0 }
+else {
     puts "Test Failed: Last line is not 0 or 1, found '$last_line' instead."
-    exit 1
-}
+    exit 1 }
 
 # Additional tests for invalid moves
 puts "Running additional tests for invalid moves..."
@@ -117,8 +110,6 @@ expect {
         send "d\r"          # Invalid move input to d4 (occupied by pawn)
         expect "Invalid move, please try again" # Expecting output for invalid move
         puts "Invalid move test passed."
-        expect eof
-    }
-}
+        expect eof } }
 
 puts "All tests completed."
