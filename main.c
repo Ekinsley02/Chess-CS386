@@ -136,31 +136,16 @@ int main()
       // Process the move if valid for highlighting
       if( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, start_row, start_col, &currentState, initialPawn ) )
          {
-               
-         // highlight potential attack points using HIGHLIGHT flag
-         printf("Highlighting potential moves.\n");
-         fflush(stdout);
+
          highlightAttack( board, start_row, start_col, currentType, currentTurn, HIGHLIGHT, currentState, initialPawn );
             
-         printf("Outputting board with highlights.\n");
          fflush(stdout);
          }
          
       outputBoard(board);
-      
-      printf("Enter  move:\n ");
-      fflush(stdout);
 
-      if( scanf( "%d %d", &end_row, &end_col ) != 2 ) 
-         {
-            
-         printf("Invalid input, exiting loop.\n");
-         fflush(stdout);
-         break;
-         }
-      
-      printf("Dehighlighting potential moves.\n");
-      fflush(stdout);
+      scanf( "%d %d", &end_row, &end_col );
+
       highlightAttack( board, start_row, start_col, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn );
    
       currentState = MOVING;
@@ -179,9 +164,6 @@ int main()
             {
                
             movePiece(board, currentTurn, end_row, end_col, currentState, start_row, start_col);
-               
-            printf("Outputting board after move.\n");
-            fflush(stdout);
             
             currentTurn = switchTurn( currentTurn );  
             
