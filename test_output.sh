@@ -85,9 +85,10 @@ if {[catch {exec diff -w actual_output.txt expected_output.txt} result]} {
     set expected_output [open "expected_output.txt" "r"]
     puts [read expected_output]
     close expected_output
-    exit 1 } 
-else {
-    puts "Board layout test passed!" }
+    exit 1
+} else {
+    puts "Board layout test passed!" 
+}
 
 # Check if the last line of the full output is 0 or 1
 set last_line [lindex [split $contents "\n"] end]
