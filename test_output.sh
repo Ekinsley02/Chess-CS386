@@ -9,10 +9,11 @@ spawn ./chess_output
 # Wait for the initial board output
 expect "R G B Q K B G R"
 send "move e2 e4\r"
-expect "*"
+sleep 0.1
 send "move e7 e5\r"
-expect "*"
+sleep 0.1
 send "exit\r"
+
 
 
 # Wait for the process to complete
