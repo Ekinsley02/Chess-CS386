@@ -59,9 +59,11 @@ int main()
       
       bool initialPawn = false, gameRunning = true;
       
-      int start_row = 0, start_col = 0;
+      int start_row = 0, start_col = 0, end_row = 0, end_col = 0;
       
-      int currentState = SELECTING;
+      int currentState = SELECTING, gameCondition = 0;
+      
+      bool inCheck = false;
       
    // create game board array
    board = initializeChessBoard( );
@@ -77,9 +79,40 @@ int main()
    
    currentTurn = 'P';
    
-   while( gameRunning )
+   while (gameRunning)
       {
       
+      initialPawn = false;
+      inCheck = false;
+      
+      gameCondition = 0;
+      
+      if( isInCheck( board, currentTurn, INCHECK ) && !isCheckmate( board, currentTurn, NONE ) )
+         {  
+         
+         gameCondition = 1;
+         }
+      
+      
+      else if( isStalemate( board, currentTurn ) )
+         {
+        
+         gameCondition = 2;
+         }
+
+      printf( "%d\n", gameCondition );
+      fflush(stdout);
+
+      if( gameCondition == 1 || gameCondition == 2 )
+         {
+         
+         gameRunning = false;
+         break;
+         }
+         
+      printf("Enter initial move: ");
+      fflush(stdout);
+
       if( scanf( "%d %d", &start_row, &start_col ) != 2 ) 
          {
             
@@ -87,8 +120,26 @@ int main()
          fflush(stdout);
          break;
          }
+
+      // Corrected variable names
+      printf("Received move: %d %d\n", start_row, start_col);
+      fflush(stdout);
          
       currentType = board[start_row][start_col].type;
+
+      // Check if the piece is the first pawn moved
+      if( start_row == 6 && currentTurn == 'P' && currentType == PAWN )
+         {
+            
+         initialPawn = true;
+         }
+        
+      else if ( start_row == 1 && currentTurn == 'O' && currentType == PAWN )
+        {
+           
+         initialPawn = true;
+        }
+      
       
       // Process the move if valid for highlighting
       if( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, start_row, start_col, &currentState, initialPawn ) )
@@ -104,7 +155,49 @@ int main()
          }
          
       outputBoard(board);
-      }
+      
+      printf("Enter  move:\n ");
+      fflush(stdout);
+
+      if( scanf( "%d %d", &end_row, &end_col ) != 2 ) 
+         {
+            
+         printf("Invalid input, exiting loop.\n");
+         fflush(stdout);
+         break;
+         }
+      
+      printf("Dehighlighting potential moves.\n");
+      fflush(stdout);
+      highlightAttack( board, start_row, start_col, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn );
    
-   return(0);
-   }
+      currentState = MOVING;
+      
+      if( isInCheck( board, currentTurn, INCHECK ) )
+         {
+         
+         inCheck = true;
+         }
+        
+      // Process the move if valid for moving
+      if( ( inCheck && putsOutOfCheck( board, currentType, start_row, start_col, end_row, end_col, currentTurn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, end_row, end_col, &currentState, initialPawn ) ) )
+         {
+            
+         if( !putsOwnKingInCheck( board, currentTurn, start_row, start_col, end_row, end_col ) )
+            {
+               
+            movePiece(board, currentTurn, end_row, end_col, currentState, start_row, start_col);
+               
+            printf("Outputting board after move.\n");
+            fflush(stdout);
+            
+            currentTurn = switchTurn( currentTurn );  
+            
+            }
+         }
+      
+      outputBoard(board);
+      
+      currentState = SELECTING;
+      }
+	}
