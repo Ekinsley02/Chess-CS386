@@ -19,30 +19,26 @@ Provide a link for the system in production and describe how you are deploying y
 
 ```
 What you need to install to run the software: 
-A C compiler (preferably GCC) 
-Pygame for visuals 
-Powershell or a similar terminal for running commands
+ - A C compiler (preferably GCC) 
+ - Pygame for visuals 
+ - Powershell or a similar terminal for running commands
 ```
 
 ### Installing
-
 A step by step guide to get a development environment running
 
-Download Zip file from {https://github.com/Ekinsley02/Chess-CS386}
-
+Step 1) Download Zip file from {https://github.com/Ekinsley02/Chess-CS386}
 ```
 1) Go to: UChess GitHub Repository
 2) Use the "Code" button and select "Download ZIP" from the dropdown.
 3) Select "Download ZIP" from the dropdown menu.
 ```
-
-Extract the Downloaded ZIP File
+Step 2) Extract the Downloaded ZIP File
 ```
 1) Locate the downloaded ZIP file on your device.
 2) Extract it to a preferred location. Remember the installation path for later deployment.
-
 ```
-Open Windows PowerShell and Navigate to the Project Directory
+Step 3) Open Windows PowerShell and Navigate to the Project Directory
 ```
 # Change to the directory where the project files are located
 cd .\[Specific File Path]\UChess
@@ -53,9 +49,7 @@ Compile the Source Code Using GCC
 # Use GCC to compile the main files and create an executable named "chess"
 gcc -Wall main.c chessUtility.c pieceUtility.c -o chess
 ```
-```
 See demo video below for a example compile and test run
-```
 
 ## Running the tests
 
