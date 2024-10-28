@@ -110,16 +110,8 @@ int main()
          break;
          }
          
-      printf("Enter initial move: ");
-      fflush(stdout);
 
-      if( scanf( "%d %d", &start_row, &start_col ) != 2 ) 
-         {
-            
-         printf("Invalid input, exiting loop.\n");
-         fflush(stdout);
-         break;
-         }
+      scanf( "%d %d", &start_row, &start_col );
 
       // Corrected variable names
       printf("Received move: %d %d\n", start_row, start_col);
