@@ -7,16 +7,9 @@ UChess is a desktop chess application that aims to teach beginner and casual che
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-Provide a link for the system in production and describe how you are deploying your system. 
-
-
-
-
+Project Repository: https://github.com/Ekinsley02/Chess-CS386
 
 ### Prerequisites
-
-
-
 ```
 What you need to install to run the software: 
  - A C compiler (preferably GCC) 
@@ -24,7 +17,7 @@ What you need to install to run the software:
  - Powershell or a similar terminal for running commands
 ```
 
-### Installing
+### Installing UChess
 A step by step guide to get a development environment running
 
 Step 1) Download Zip file from {https://github.com/Ekinsley02/Chess-CS386}
