@@ -269,3 +269,191 @@ void copyBoard( ChessBoardType **destinationBoard, ChessBoardType **sourceBoard 
       }
    
    }
+
+
+/*
+Description: determines the opposite side guven the current side
+Input: currentTurn
+Output: The opposite of the current side
+Dependancies: NONE
+*/
+char determineOppositeSide( char currentTurn )
+   {
+   if( currentTurn == 'P' )
+      {
+      
+      return 'O';
+      }
+   
+   else if( currentTurn == 'O' )
+      {
+      
+      return 'P';
+      }
+   
+   // if not given a valid current turn return X
+   return 'X';
+   }
+
+/*
+Description: determines the sides of the pieces on initial board
+Input: Chessboard
+Output: The pieces on the board sides identified
+Dependancies: NONE
+*/
+void determineSides( ChessBoardType **board )
+   {
+
+   // initialize functions/variables
+      int boardRowIndex, boardColIndex;
+   
+   // set the first 16 chess pieces members to oponent
+   for( boardRowIndex = 0; boardRowIndex < 2; boardRowIndex++ )
+      {
+
+      for( boardColIndex = 0; boardColIndex < 8; boardColIndex++ )
+         {
+
+         board[ boardRowIndex ][ boardColIndex ].side = 'O';
+         }
+      }
+
+   // set the last 16 chess pieces to player
+   for( boardRowIndex = 6; boardRowIndex < 8; boardRowIndex++ )
+      {
+
+      for( boardColIndex = 0; boardColIndex < 8; boardColIndex++ )
+         {
+
+         board[ boardRowIndex ][ boardColIndex ].side = 'P';
+         }
+
+      }
+
+   }
+   
+/*
+Description: finds the piece type of the given board row and column
+Input: Current chess board, board row, board column
+Output: the given chess piece type
+Dependancies: NONE
+*/
+char determineType( ChessBoardType **board, int boardRow, int boardCol )
+   {
+
+   // return the type at given position
+   return board[ boardRow][ boardCol ].type;
+   }
+
+/*
+Description: prints the bottom half of the board, after the pieces.
+ Also determines which opperating system is used.
+Input: NONE
+Output: printed lower chess board
+Dependancies: NONE
+*/
+void displayBottomBoard()
+   {
+
+   #ifdef OS_WINDOWS
+   
+      printf("|  |                          |  |\n");
+      printf("|  +--------------------------+  |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|                                |\n");
+      printf("|                                |\n");
+      printf("+--------------------------------+\n");
+   #elif defined(OS_MAC)
+      
+      printf("|  |                          |  |\n");
+      printf("|  └--------------------------┘  |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|                                |\n");
+      printf("|                                |\n");
+      printf("└--------------------------------┘\n");
+      
+   #else
+      
+      printf("|  |                          |  |\n");
+      printf("|  +--------------------------+  |\n");
+      printf("|     H  G  F  E  D  C  B  A     |\n");
+      printf("|                                |\n");
+      printf("|                                |\n");
+      printf("+--------------------------------+\n");
+      
+   #endif
+   }
+
+/*
+Description: displays the entire chess board.
+Input: given chess board
+Output: printed chess board
+Dependancies: printTopBoard,
+*/
+void displayChessBoard( ChessBoardType **board, int rows, int cols )
+   {
+
+   // initilaize functions/variables
+      int rowIndex, colIndex, rowNum = BOARD_SIZE;
+      char bar = '|';
+   
+   // print a buffer from the other text
+   printf("\n\n\n\n\n\n\n\n\n\n");
+   
+   // display the top segment of the board
+   displayTopBoard();
+   
+   for( rowIndex = 0; rowIndex < rows; rowIndex++ )
+      {
+         
+      printf( "%c %d%c", bar, rowNum, bar );
+      
+      for( colIndex = 0; colIndex < cols; colIndex++ )
+         { 
+
+         if( board[ rowIndex ][ colIndex ].highlight == true )
+            {
+
+            printf( GREEN_TEXT "%3c" RESET_TEXT,
+                                          board[ rowIndex ][ colIndex ].type );
+            }
+         
+        else if( board[ rowIndex ][ colIndex ].castlePos == true )
+        	{
+        	printf( YELLOW_TEXT "%3c" RESET_TEXT,
+                                          board[ rowIndex ][ colIndex ].type );
+        	}
+         
+            
+         else if( board[ rowIndex ][ colIndex ].side == 'O' )
+            {
+
+            printf( RED_TEXT "%3c" RESET_TEXT,
+                                          board[ rowIndex ][ colIndex ].type );
+            }
+            
+         else if( board[ rowIndex ][ colIndex ].side == 'P' )
+            {
+
+            printf( BLUE_TEXT "%3c" RESET_TEXT,
+                                          board[ rowIndex ][ colIndex ].type );
+            }
+            
+         else
+            {
+
+            printf( "%3c", board[ rowIndex ][ colIndex ].type );
+            }
+
+         }
+         
+      printf("%3c%d %c", bar, rowNum, bar);
+      
+      rowNum = rowNum - 1;
+      
+      printf("\n");
+      }
+      
+   displayBottomBoard();
+   }
+
