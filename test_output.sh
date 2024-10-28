@@ -12,6 +12,7 @@ expect {
         # After initial board, simulate user input
         send "move e2 e4\r"
         send "move e7 e5\r"
+        expect "*"
         send "exit\r"  # Adjust based on your program's exit condition
     }
 }
