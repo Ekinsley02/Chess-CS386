@@ -88,7 +88,8 @@ jobs:
         run: cat test_log.txt
 ```
 
-[Chessboard Screenshot2]https://ibb.co/4WdM3yK)
+**Screenshot of script running:**
+**![](https://i.ibb.co/VVmD5yJ/Screenshot-2024-10-27-205522.png)**
 
 ## Deployment
 
