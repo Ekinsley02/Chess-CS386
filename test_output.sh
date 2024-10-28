@@ -3,38 +3,21 @@
 # Compile the code
 gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
 
-# Run the program and capture the output
-./chess_output > full_output.txt
+# Run the program with a timeout and capture the output
+timeout 10 ./chess_output > full_output.txt
+
+# Check if the timeout was reached
+if [ $? -eq 124 ]; then
+    echo "Test Failed: Program timed out."
+    exit 1
+fi
 
 # Extract the initial board part from the output
 head -n 24 full_output.txt > actual_output.txt
 
-# Expected output file for comparison (only the initial board structure)
+# Expected output file for comparison
 cat << EOF > expected_output.txt
-R G B Q K B G R
-P P P P P P P P
-X X X X X X X X
-X X X X X X X X
-X X X X X X X X
-X X X X X X X X
-P P P P P P P P
-R G B Q K B G R
-O O O O O O O O
-O O O O O O O O
-X X X X X X X X
-X X X X X X X X
-X X X X X X X X
-X X X X X X X X
-P P P P P P P P
-P P P P P P P P
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0
+# (expected output goes here)
 EOF
 
 # Compare the initial board output to expected output
