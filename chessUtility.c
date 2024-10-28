@@ -781,3 +781,293 @@ void highlightAttack( ChessBoardType **board, int initialRow, int initialCol,
       }
    }
 
+/*
+Description: Allocates memory for the chess board.
+Input: number of rows and collumns
+Output: allocated memory for the chess board
+Dependancies: malloc w/ sizeof
+*/
+ChessBoardType **initializeChessBoard( )
+   {
+   // iniitlaize functions/variables
+       ChessBoardType **newBoard;
+       int index;
+
+   newBoard = ( ChessBoardType ** )malloc( BOARD_SIZE * sizeof( ChessBoardType * ) );
+
+   for( index = 0; index < BOARD_SIZE; index++ )
+      {
+
+      newBoard[ index ] = ( ChessBoardType * )malloc
+                                           ( BOARD_SIZE * sizeof( ChessBoardType ) );
+      }
+
+   return newBoard;
+   }
+
+bool isChar( char inputCol )
+    {
+        
+    return isalpha( inputCol );
+    }
+
+/*
+Description: Checks every possible move of opponent and checks if the king is in scope
+Input: chess board, current turn
+Output: NONE
+Dependancies: determineType
+*/
+bool isInCheck(ChessBoardType **board, char turn, char checkCode)
+   {
+    int rowIndex, colIndex;
+    char currentType, currentTurn;
+    int currentState = CHECK;
+
+    // Iterate over the entire board
+    for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
+      {
+         
+        for( colIndex = 0; colIndex < BOARD_SIZE; colIndex++ ) 
+           {
+              
+            currentType = board[ rowIndex ][ colIndex ].type;
+            currentTurn = board[ rowIndex ][ colIndex ].side;
+
+            // Only check positions of the specified turn
+            if( currentTurn == turn && checkCode == PUTCHECK )
+               {
+                  
+                // Check if the current piece can move to a position that puts the opponent in check
+                if( checkIfValidPosition( board, currentType, currentTurn, rowIndex, colIndex, rowIndex, colIndex, &currentState, false ) )
+                  {
+                     
+                    if( currentState == CHECK )
+                       {
+                          
+                        return true;
+                       }
+                    }
+               }
+            if( checkCode == INCHECK )
+               {
+                  
+               if( checkIfValidPosition( board, currentType, currentTurn, rowIndex, colIndex, rowIndex, colIndex, &currentState, false ) )
+                  {
+                     
+                   if( currentState == CHECK )
+                     {
+                    
+                     return true;
+                     }
+                  }
+               }
+           }
+      }
+
+    // If no piece can put the opponent in check, return false
+    return false;
+   }
+
+/*
+Description: Uses isCheckMate with the flag stalemate to see if any pieces can move
+Input: chess board, currentTurn
+Output: if the board is in a stalemate
+Dependancies: isCheckMate
+*/
+bool isStalemate( ChessBoardType **board, char currentTurn )
+    {
+    
+    if( !isCheckmate( board, currentTurn, STALEMATE ) )
+        {
+        
+        return true;
+        }
+    
+    return false;
+    }
+
+/*
+Description: Handles the move piece event based on whos turn it is and what
+piece it is.
+Input: chess board
+Output: NONE
+Dependancies: determineType, pieceHelperPawn
+*/
+void movePiece( ChessBoardType **board, char currentTurn,
+                               int currentRow, int currentCol, int currentState,
+                                                int initialRow, int initialCol )
+   {
+   // initialize functions/variables
+      char currentType;
+
+   // determine the type of chess piece played
+   currentType = determineType( board, initialRow, initialCol );
+
+   // determine if it is the players turn
+      // handle the event of each piece
+   switch( currentType )
+      {
+
+      case PAWN:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+       
+      case ROOK:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+      
+      case KNIGHT:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+      
+      case BISHOP:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+      
+      case KING:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+      
+      case QUEEN:
+         pieceMoveHelper( board, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+         break;
+      }
+   
+   // mark that the piece has been moved at least once
+   board[ currentRow ][ currentCol ].hasMoved = true;
+   }
+
+/*
+Description: Starts the game off and handles events
+Input: chess board
+Output: NONE
+Dependancies: displayChessBoard, columnToIndex, determineType,
+ checkForBattle, battleHandler, movePiece
+*/
+void playGame( ChessBoardType **board )
+   {
+   // initialize functions/variables
+      bool gameFlag = true, validMove, inCheck = false;
+      int initialRow, colIndex, rowIndex;
+      char initialCol, type = NON_PLAYER, winner[ 6 ];
+      // control whos turn it is
+      char currentTurn = 'P';
+      int result;
+   
+      
+   displayChessBoard( board, BOARD_SIZE, BOARD_SIZE );
+   
+   while( gameFlag == true )
+      {
+
+      validMove = false;
+      if( currentTurn == 'P' )
+         {
+
+         printf( "\nCurrent turn: BLUE" );
+         }
+
+      else
+         {
+
+         printf( "\nCurrent turn: RED" );
+         }
+      
+      if( isInCheck( board, currentTurn, INCHECK ) )
+         {  
+        
+         if( !isCheckmate( board, currentTurn, NONE ) )
+            {
+               
+            if( currentTurn == 'P' )
+               {
+                  
+               strcpy(winner, "RED");
+               }
+               
+            if( currentTurn == 'O' )
+               {
+                  
+               strcpy(winner, "BLUE");
+               }
+            
+            printf( "\nYour checkmated! %s wins!", winner );
+            
+            gameFlag = false;
+            
+            break;
+            }
+            
+         printf( "\nYour in check!" );
+         
+         inCheck = true;  
+         }
+         
+      else if( isStalemate( board, currentTurn ) )
+        {
+        
+        printf( "\nKing stalemated! Its a tie!" );
+        
+        gameFlag = false;
+        } 
+      
+      
+    do 
+        {
+        printf("\nEnter row: ");
+        result = scanf("%d", &initialRow);
+
+        // Check if the input is valid
+        if( result != 1 ) 
+        
+            {
+            printf("Invalid input. Please enter an integer.\n");
+
+            // Clear the invalid input
+            while (getchar() != '\n');
+            }
+        
+        } while (result != 1);
+        
+      rowIndex = rowToIndex( initialRow );
+      
+      printf( "\nenter col:" );  
+
+      scanf( " %c", &initialCol );
+        
+      // exit game if q is typed
+      if( initialCol == 'Q' || initialCol == 'q' )
+         {
+            
+         gameFlag = false;
+         break;
+         }
+      
+      colIndex = columnToIndex( initialCol );
+      printf("\n col: %d", colIndex );
+      type = determineType( board, rowIndex, colIndex );
+      
+      // make sure the user inputs their piece and its in bounds
+      if( board[ rowIndex ][ colIndex ].side == currentTurn && rowIndex >= 0 && colIndex >= 0 && rowIndex < BOARD_SIZE && colIndex < BOARD_SIZE ) 
+         {
+            
+         selectNextPosition( board, type, currentTurn, rowIndex, colIndex, &validMove, inCheck );
+         displayChessBoard( board, BOARD_SIZE, BOARD_SIZE );
+         }
+      else
+         {
+            
+         displayChessBoard( board, BOARD_SIZE, BOARD_SIZE );
+         printf( "\nInvalid choice please try again" );
+         validMove = false;
+         }
+
+      if( validMove == true )
+         {
+
+         currentTurn = switchTurn( currentTurn );  
+         }    
+      }
+   }
+
+
