@@ -1413,6 +1413,778 @@ bool checkKnightPositions( ChessBoardType **board, char currentTurn, int current
 
    return false;
    }
+/*
+Description: compares every viable pawn position with current row
+ and current collumn
+Input: board, current row, current column
+Output: the index from the given column
+Dependancies: NONE
+*/
+
+bool checkPawnPositions( ChessBoardType **board, char currentTurn, int currentRow, int currentCol, int initialRow, int initialCol, int *currentState, bool initialPawn  )
+    {
+    // initialize functions/variables
+        bool isQueen = false, isBattleValid = false, isPassiveValid = false;
+        
+    
+     if( currentTurn == 'P' )
+        {
+        
+        // for initial isInCheck function
+        if( *currentState == CHECK )
+            {
+
+            if( ( board[initialRow - 1][initialCol + 1].type == KING && board[initialRow - 1][initialCol + 1].side == 'O') ||
+                ( board[initialRow - 1][initialCol - 1].type == KING && board[initialRow - 1][initialCol - 1].side == 'O'))
+                {
+                return true;
+                }
+            }
+        
+        // if the pawn is moved to the end, make queen
+        if( currentRow == 0 )
+           {
+           
+           board[ currentRow ][ currentCol ].type = QUEEN;
+           board[ currentRow ][ currentCol ].side = 'P';
+           board[ initialRow ][ initialCol ].type = 'X';
+           board[ initialRow ][ initialCol ].side = NON_PLAYER;
+           isQueen = true;
+           return true;
+           }
+           
+        // Check if the pawn is in battle position
+        if( isQueen == false && ( ( *currentState == SELECTING && 
+            ( board[ initialRow - 1 ][ initialCol - 1 ].side == 'O' || board[ initialRow - 1 ][ initialCol + 1 ].side == 'O' ) ) ||
+              ( *currentState == MOVING && ( currentRow == initialRow - 1 && ( currentCol == initialCol - 1 || currentCol == initialCol + 1 ) && 
+                  ( *currentState == MOVING && ( board[ initialRow - 1 ][ initialCol - 1 ].side == 'O' || board[ initialRow - 1 ][ initialCol + 1 ].side == 'O' ) ) ) ) ) )
+           {
+           *currentState = BATTLE;
+           isBattleValid = true;
+           }
+
+        // Check passive position
+        if( isQueen == false && ( ( ( *currentState == SELECTING || *currentState == BATTLE ) && board[ initialRow - 1 ][ initialCol ].type == NON_PLAYER ) ||
+           ( currentRow == initialRow - 1 && currentCol == initialCol && ( board[ initialRow - 1 ][ initialCol ].type == NON_PLAYER ) ) ||
+           ( initialPawn == true && board[ initialRow - 2 ][ initialCol ].type == NON_PLAYER && currentRow == initialRow - 2 && currentCol == initialCol ) ) )
+           {
+           
+           *currentState = PASSIVE;
+           isPassiveValid = true;
+           }
+
+        // Check if the pawn is in both battle and passive position
+        if( isBattleValid && isPassiveValid )
+           {
+              
+           *currentState = BOTH;
+           }
+
+        if( isBattleValid || isPassiveValid )
+           {
+           
+           return true;
+           }
+        }
+     else if( currentTurn == 'O' )
+        {
+        
+        // for initial isInCheck function
+        if ( *currentState == CHECK )
+        {
+            if ( ( board[ initialRow + 1 ][ initialCol + 1 ].type == KING && board[ initialRow + 1 ][ initialCol + 1 ].side == 'P') ||
+                ( board[ initialRow + 1 ][ initialCol - 1 ].type == KING && board[ initialRow + 1 ][ initialCol - 1 ].side == 'P') )
+            	{
+
+                return true;
+            	}
+        }
+        
+        // if the pawn is moved to the end, make queen
+        if( currentRow == BOARD_SIZE - 1 )
+           {
+        
+           board[ currentRow ][ currentCol ].type = QUEEN;
+           board[ currentRow ][ currentCol ].side = 'O';
+           board[ initialRow ][ initialCol ].type = 'X';
+           board[ initialRow ][ initialCol ].side = NON_PLAYER;
+           isQueen = true;
+           return true;
+           }
+
+        // Check if the pawn is in battle position
+        if( isQueen == false && ( ( *currentState == SELECTING && 
+            ( board[ initialRow + 1 ][ initialCol - 1 ].side == 'P' || board[ initialRow + 1 ][ initialCol + 1 ].side == 'P' ) ) ||
+              ( *currentState == MOVING && ( currentRow == initialRow + 1 && ( currentCol == initialCol - 1 || currentCol == initialCol + 1 ) && 
+                  ( *currentState == MOVING && ( board[ initialRow + 1 ][ initialCol - 1 ].side == 'P' || board[ initialRow + 1 ][ initialCol + 1 ].side == 'P' ) ) ) ) ) )
+           {
+              
+           *currentState = BATTLE;
+           isBattleValid = true;
+           }
+
+        // Check passive position
+        if( isQueen == false && ( ( ( *currentState == SELECTING || *currentState == BATTLE ) && board[ initialRow + 1 ][ initialCol ].type == NON_PLAYER ) ||
+           ( currentRow == initialRow + 1 && currentCol == initialCol && ( board[ initialRow + 1 ][ initialCol ].type == NON_PLAYER ) ) ||
+           ( initialPawn == true && board[ initialRow + 2 ][ initialCol ].type == NON_PLAYER && currentRow == initialRow + 2 && currentCol == initialCol) ) )
+           {
+           
+           *currentState = PASSIVE;
+           isPassiveValid = true;
+           }
+
+        // Check if the pawn is in both battle and passive position
+        if( isBattleValid && isPassiveValid )
+           {
+              
+           *currentState = BOTH;
+           }
+           
+        if( isBattleValid || isPassiveValid )
+           {
+
+           return true;
+           }
+        }
+        
+    // otherwise return false
+    return false;
+    }
+
+/*
+Description: compares every viable rook position with current row
+ and current collumn
+Input: board, current row, current column
+Output: the index from the given column
+Dependancies: NONE
+*/
+
+bool checkRookPositions( ChessBoardType **board, char currentTurn, int currentRow, int currentCol, int initialRow, int initialCol, int *currentState )
+   {
+   // initialize functions/variables
+   		int wkgIndex;
+   		char oppositeSide;
+
+   oppositeSide = determineOppositeSide( currentTurn );
+
+    // Check if the user input a teammate
+   if( *currentState != CHECK && board[ currentRow ][ currentCol ].side == currentTurn )
+      {
+      
+      return false;
+      }
+
+  // check upwards of the rook starting one ahead
+  for( wkgIndex = initialRow - 1; wkgIndex >= 0; wkgIndex-- )
+     {
+     
+     // check to see if the opponents king is put into check
+     if( *currentState == CHECK && board[ wkgIndex ][ initialCol ].type == KING && board[ wkgIndex ][ initialCol ].side == oppositeSide )
+        {
+        
+        return true;
+        }
+        
+     
+     // stop searching if a piece from the current turn is found
+     if( board[ wkgIndex ][ initialCol ].side == currentTurn )
+        {
+
+        break;
+        }
+
+     // stop searching and report true if current positions match with search
+     if( wkgIndex == currentRow && initialCol == currentCol )
+        {
+
+        return true;
+        }
+
+     // check if the current search index hits an opponent
+     if( board[ wkgIndex ][ initialCol ].side == oppositeSide )
+        {
+
+        // if this matches the current positions report true
+        if( wkgIndex == currentRow && initialCol == currentCol )
+           {
+
+           return true;
+           }
+
+        break;
+        }
+     }
+
+  // check downwards of the rook starting one behind
+  for( wkgIndex = initialRow + 1; wkgIndex < BOARD_SIZE; wkgIndex++ )
+     {
+
+     // check to see if the opponents king is put into check
+     if( *currentState == CHECK && board[ wkgIndex ][ initialCol ].type == KING && board[ wkgIndex ][ initialCol ].side == oppositeSide )
+        {
+        
+        return true;
+        }
+
+     // stop searching if a piece from the current turn is found
+     if( board[ wkgIndex ][ initialCol ].side == currentTurn )
+        {
+
+        break;
+        }
+
+     // stop searching and report true if current positions match with search
+     if( wkgIndex == currentRow && initialCol == currentCol )
+        {
+
+        return true;
+        }
+
+     // check if the current search index hits an opponent
+     if( board[ wkgIndex ][ initialCol ].side == oppositeSide )
+        {
+
+        // if this matches the current positions report true
+        if( wkgIndex == currentRow && initialCol == currentCol )
+           {
+
+           return true;
+           }
+
+        break;
+        }
+     }
+
+  // check to the right of the rook starting one to the right
+  for( wkgIndex = initialCol + 1; wkgIndex < BOARD_SIZE; wkgIndex++ )
+     {
+
+     // check to see if the opponents king is put into check
+     if( *currentState == CHECK && board[ initialRow ][ wkgIndex ].type == KING && board[ initialRow ][ wkgIndex ].side == oppositeSide )
+        {
+        
+        return true;
+        }
+
+     // stop searching if a piece from the current turn is found
+     if( board[ initialRow ][ wkgIndex ].side == currentTurn )
+        {
+
+        break;
+        }
+
+     // stop searching and report true if current positions match with search
+     if( initialRow == currentRow && wkgIndex == currentCol )
+        {
+
+        return true;
+        }
+
+     // check if the current search index hits an opponent
+     if( board[ initialRow ][ wkgIndex ].side == oppositeSide )
+        {
+
+        // if this matches the current positions report true
+        if( initialRow == currentRow && wkgIndex == currentCol )
+           {
+
+           return true;
+           }
+
+        break;
+        }
+     }
+
+  // check to the left of the rook starting one to the left
+  for( wkgIndex = initialCol - 1; wkgIndex >= 0; wkgIndex-- )
+     {
+
+     // check to see if the opponents king is put into check
+     if( *currentState == CHECK && board[ initialRow ][ wkgIndex ].type == KING && board[ initialRow ][ wkgIndex ].side == oppositeSide )
+        {
+        
+        return true;
+        }
+
+     // stop searching if a piece from the current turn is found
+     if( board[ initialRow ][ wkgIndex ].side == currentTurn )
+        {
+
+        break;
+        }
+
+     // stop searching and report true if current positions match with search
+     if( initialRow == currentRow && wkgIndex == currentCol )
+        {
+
+        return true;
+        }
+
+     // check if the current search index hits an opponent
+     if( board[ initialRow ][ wkgIndex ].side == oppositeSide )
+        {
+
+        // if this matches the current positions report true
+        if( initialRow == currentRow && wkgIndex == currentCol )
+           {
+
+           return true;
+           }
+
+        break;
+        }
+     }
+   
+   // if no positions match return false
+   return false;
+   }
+
+
+/*
+Description: highlights the potential attack positions for bishop
+Input: chessboard, currentRow, currentCol, initial row, initial collomn
+Output: highlighted location
+Dependancies: NONE
+*/
+void highlightBishop( ChessBoardType **board, char currentTurn, int initialRow, int initialCol, char highlightFlag )
+   {
+   // initialize functions/variables
+      int wkgRow, wkgCol;
+      char oppositeSide = determineOppositeSide( currentTurn );
+
+   // check up left of the rook starting one ahead
+   for( wkgRow = initialRow - 1, wkgCol = initialCol - 1; wkgRow >= 0 && wkgCol >= 0; wkgRow--, wkgCol-- )
+      {
+
+      // stop searching if a piece from the current turn is found
+      if( board[ wkgRow ][ wkgCol ].side == currentTurn )
+         {
+
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgRow, wkgCol ) ) )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = true;
+         }
+
+      // check if the current search index hits an opponent
+      if( board[ wkgRow ][ wkgCol ].side == oppositeSide )
+         {
+
+         break;
+         }
+      }
+
+   // check up right of the rook starting one ahead
+   for( wkgRow = initialRow - 1, wkgCol = initialCol + 1; wkgRow >= 0 && wkgCol < BOARD_SIZE; wkgRow--, wkgCol++ )
+      {
+
+      // stop searching if a piece from the current turn is found
+      if( board[ wkgRow ][ wkgCol ].side == currentTurn )
+         {
+
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgRow, wkgCol ) ) )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = true;
+         }
+
+      // check if the current search index hits an opponent
+      if( board[ wkgRow ][ wkgCol ].side == oppositeSide )
+         {
+
+         break;
+         }
+      }
+
+   // check up right of the rook starting one ahead
+   for( wkgRow = initialRow + 1, wkgCol = initialCol + 1; wkgRow < BOARD_SIZE && wkgCol < BOARD_SIZE; wkgRow++, wkgCol++  )
+      {
+
+      // stop searching if a piece from the current turn is found
+      if( board[ wkgRow ][ wkgCol ].side == currentTurn )
+         {
+
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = false;
+         }
+
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgRow, wkgCol ) ) )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = true;
+         }
+
+      // check if the current search index hits an opponent
+      if( board[ wkgRow ][ wkgCol ].side == oppositeSide )
+         {
+
+         break;
+         }
+      }
+
+   // check to the left of the rook starting one to the left
+   for( wkgRow = initialRow + 1, wkgCol = initialCol - 1; wkgRow < BOARD_SIZE && wkgCol >= 0; wkgRow++, wkgCol-- )
+      {
+
+      // stop searching if a piece from the current turn is found
+      if( board[ wkgRow ][ wkgCol ].side == currentTurn )
+         {
+
+         break;
+         }
+
+      if( highlightFlag == DEHIGHLIGHT )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = false;
+         }
+         
+      else if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, wkgRow, wkgCol ) ) )
+         {
+
+         board[ wkgRow ][ wkgCol ].highlight = true;
+         }
+
+      // check if the current search index hits an opponent
+      if( board[ wkgRow ][ wkgCol ].side == oppositeSide )
+         {
+
+         break;
+         }
+      }
+   }
+   
+/*
+Description: highlights the potential attack positions for king
+Input: chessboard, currentRow, currentCol, initial row, initial collomn
+Output: highlighted locations
+Dependancies: NONE
+*/
+
+void highlightKing( ChessBoardType **board, char currentTurn, int initialRow, int initialCol, char highlightFlag )
+    {
+    
+    // check if top left is available and won't put in check
+    if( initialRow > 0 && initialCol > 0 && board[ initialRow - 1 ][ initialCol - 1 ].side != currentTurn )
+        {
+
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol - 1 ) ) )
+            {
+            
+            board[ initialRow - 1 ][ initialCol - 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow - 1 ][ initialCol - 1 ].highlight = false;
+            }
+        }
+
+    // check if top middle is available and won't put in check
+    if( initialRow > 0 && board[ initialRow - 1 ][ initialCol ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol ) ) )
+            {
+            
+            board[ initialRow - 1 ][ initialCol ].highlight = true;
+            }
+            
+        else
+            {
+            
+            board[ initialRow - 1 ][ initialCol ].highlight = false;
+            }
+        }
+        
+    // check if top right is available and won't put in check
+    if( initialRow > 0 && initialCol < BOARD_SIZE - 1 && board[ initialRow - 1 ][ initialCol + 1 ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol + 1 ) ) )
+            {
+            
+            board[ initialRow - 1 ][ initialCol + 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow - 1 ][ initialCol + 1 ].highlight = false;
+            }
+        }
+        
+    // check if left of king is available and won't put in check
+    if( initialCol > 0 && board[ initialRow ][ initialCol - 1 ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow, initialCol - 1 ) ) )
+            {
+            
+            board[ initialRow ][ initialCol - 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow ][ initialCol - 1 ].highlight = false;
+            }
+        }
+
+    // check if right of king is available and won't put in check
+    if( initialCol < BOARD_SIZE - 1 && board[ initialRow ][ initialCol + 1 ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow, initialCol + 1 ) ) )
+            {
+            
+            board[ initialRow ][ initialCol + 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow ][ initialCol + 1 ].highlight = false;
+            }
+        }
+
+    // check if bottom left is available and won't put in check
+    if( initialRow < BOARD_SIZE - 1 && initialCol > 0 && board[ initialRow + 1 ][ initialCol - 1 ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol - 1) ) )
+            {
+            
+            board[ initialRow + 1 ][ initialCol - 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow + 1 ][ initialCol - 1 ].highlight = false;
+            }
+        }
+        
+    // check if bottom middle is available and won't put in check
+    if( initialRow < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol ) ) )
+            {
+            
+            board[ initialRow + 1 ][ initialCol ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow + 1 ][ initialCol ].highlight = false;
+            }
+        }
+    // check if bottom right is available and won't put in check
+    if( initialRow < BOARD_SIZE - 1 && initialCol < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol + 1 ].side != currentTurn )
+        {
+        
+        if( highlightFlag == HIGHLIGHT && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol + 1 ) ) )
+            {
+            
+            board[ initialRow + 1 ][ initialCol + 1 ].highlight = true;
+            }
+        else
+            {
+            
+            board[ initialRow + 1 ][ initialCol + 1 ].highlight = false;
+            }
+        }
+    }
+/*
+Description: highlights the potential attack positions for knight
+Input: chessboard, currentRow, currentCol, initial row, initial collomn
+Output: highlighted locations
+Dependancies: NONE
+*/
+void highlightKnight( ChessBoardType **board, char currentTurn, int initialRow, int initialCol, char highlightFlag )
+   {
+
+   // checking upwards, only check if the piece is in the right position
+      // check if initial row is 2 or greater
+   if( initialRow > 1 )
+      {
+   
+      // check if initial col is 1 or greater AND initial col is less than or equal to BOARD SIZE
+      if( initialCol >= 0 && initialCol <= BOARD_SIZE - 1 )
+         {
+            
+         if( highlightFlag == HIGHLIGHT && board[ initialRow - 2 ][ initialCol - 1 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 2, initialCol - 1 ) ))
+            {
+         
+            board[ initialRow - 2 ][ initialCol - 1 ].highlight = true;
+            }
+            
+         
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow - 2 ][ initialCol - 1 ].highlight = false;
+            }
+         }
+
+      // check if initial col is 6 or less AND initial col is greater than 0
+      if( initialCol >= 0 && initialCol <= 6 )
+         {
+
+         if( highlightFlag == HIGHLIGHT && board[ initialRow - 2 ][ initialCol + 1 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 2, initialCol + 1 ) ) )
+            {
+         
+            board[ initialRow - 2 ][ initialCol + 1 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow - 2 ][ initialCol + 1 ].highlight = false;
+            }
+         }
+      }
+
+   // check downwards, only check if the piece is in the right position
+   if( initialRow < 6 )
+      {
+
+      // check valid left down position
+      if( initialCol >= 0 && initialCol <= BOARD_SIZE - 1 )
+         {
+         if( highlightFlag == HIGHLIGHT && board[ initialRow + 2 ][ initialCol - 1 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 2, initialCol - 1 ) ))
+            {
+         
+            board[ initialRow + 2 ][ initialCol - 1 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow + 2 ][ initialCol - 1 ].highlight = false;
+            }
+         }
+
+      // check valid right down position
+      if( initialCol >= 0 && initialCol <= 6 )
+         {
+         if( highlightFlag == HIGHLIGHT && board[ initialRow + 2 ][ initialCol + 1 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 2, initialCol + 1 ) ))
+            {
+         
+            board[ initialRow + 2 ][ initialCol + 1 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow + 2 ][ initialCol + 1 ].highlight = false;
+            }
+         }
+         
+      }
+      
+   // check right, only check if is in the right position
+   if( initialCol < 6 )
+      {
+      
+      // check right up position
+      if( initialRow > 0 && initialRow <= BOARD_SIZE - 1 )
+         {
+            
+         if( highlightFlag == HIGHLIGHT && board[ initialRow - 1 ][ initialCol + 2 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol + 2 ) ) )
+            {
+         
+            board[ initialRow - 1 ][ initialCol + 2 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow - 1 ][ initialCol + 2 ].highlight = false;
+            }
+         }
+      
+         
+      // check valid right down position
+      if( initialRow < BOARD_SIZE - 1 && initialRow >= 0 )
+         {
+
+         if( highlightFlag == HIGHLIGHT && board[ initialRow + 1 ][ initialCol + 2 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol + 2 ) ) )
+            {
+         
+            board[ initialRow + 1 ][ initialCol + 2 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow + 1 ][ initialCol + 2 ].highlight = false;
+            }
+         }
+      }
+   
+   // check left, only check if is in the right position
+   if( initialCol > 1 )
+      {
+      
+      // check valid left up position
+      if( initialRow > 0 && initialRow < BOARD_SIZE - 1 )
+         {
+         
+         if( highlightFlag == HIGHLIGHT && board[ initialRow - 1 ][ initialCol - 2 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow - 1, initialCol - 2 ) ) )
+            {
+         
+            board[ initialRow - 1 ][ initialCol - 2 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow - 1 ][ initialCol - 2 ].highlight = false;
+            }
+         }
+         
+      // check valid left down position
+      if( initialRow < BOARD_SIZE - 1 && initialRow >= 0 )
+         {
+
+         if( highlightFlag == HIGHLIGHT && board[ initialRow + 1 ][ initialCol - 2 ].side != currentTurn && !( putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, initialRow + 1, initialCol - 2 ) ) )
+            {
+         
+            board[ initialRow + 1 ][ initialCol - 2 ].highlight = true;
+            }
+            
+         else if( highlightFlag == DEHIGHLIGHT )
+            {
+         
+            board[ initialRow + 1 ][ initialCol - 2 ].highlight = false;
+            }
+         }
+      }
+   }
+
+
+
 
 
 
