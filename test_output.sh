@@ -9,10 +9,13 @@ spawn ./chess_output
 # Wait for the initial board output
 expect {
     "R G B Q K B G R" {
-        # After initial board, simulate user input
+        # Test valid move scenario (e.g., moving a pawn)
         send "move e2 e4\r"
-        send "move e7 e5\r"
-        send "exit\r"  # Adjust based on your program's exit condition
+        expect "Where would you like to move this piece?"
+        send "3\r"          # Row input for e4 (3 based on your row indexing)
+        send "e\r"          # Column input for e4
+        expect "Check!"     # Expecting output if the move results in check
+        expect eof
     }
 }
 
@@ -84,4 +87,19 @@ if {$last_line == "0" || $last_line == "1"} {
 } else {
     puts "Test Failed: Last line is not 0 or 1, found '$last_line' instead."
     exit 1
+}
+
+# Additional tests for invalid moves
+# Restart the chess program for a clean test environment
+spawn ./chess_output
+expect {
+    "R G B Q K B G R" {
+        # Test invalid move scenario (e.g., moving a pawn to an occupied square)
+        send "move e2 e4\r"
+        expect "Where would you like to move this piece?"
+        send "3\r"          # Row input for e4 (3 based on your row indexing)
+        send "d\r"          # Invalid move input to d4 (occupied by pawn)
+        expect "Invalid move, please try again" # Expecting output for invalid move
+        expect eof
+    }
 }
