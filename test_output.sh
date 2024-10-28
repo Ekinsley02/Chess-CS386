@@ -2,15 +2,12 @@
 
 # Compile the code
 set compile_result [exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./]
-if {[catch {exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./} result]}
-   {
+if {[catch {exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./} result]} {
     puts "Compilation failed: $result"
     exit 1
-   }
-else
-   {
+} else {
     puts "Compilation succeeded."
-   }
+}
 
 # Start the chess program
 puts "Starting chess program..."
