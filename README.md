@@ -42,7 +42,7 @@ Compile the Source Code Using GCC
 # Use GCC to compile the main files and create an executable named "chess"
 gcc -Wall main.c chessUtility.c pieceUtility.c -o chess
 ```
-See demo video below for a example compile and test run
+See steps below for a example compile and test run
 
 ## Running the tests
 
