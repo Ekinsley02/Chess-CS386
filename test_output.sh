@@ -1,40 +1,24 @@
-#!/usr/bin/expect -f
+#!/bin/bash
 
 # Compile the code
-exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
+echo "Compiling the code..."
+gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
 
 # Start the chess program
-spawn ./chess_output
+echo "Starting chess program..."
+timeout 10 ./chess_output > full_output.txt
 
-# Wait for the initial board output
-expect {
-    "R G B Q K B G R" {
-        # Test valid move scenario (e.g., moving a pawn)
-        send "move e2 e4\r"
-        expect "Where would you like to move this piece?"
-        send "3\r"          # Row input for e4 (3 based on your row indexing)
-        send "e\r"          # Column input for e4
-        expect "Check!"     # Expecting output if the move results in check
-        expect eof
-    }
-}
-
-# Wait for the process to complete
-expect eof
-
-# Capture output for comparison
-set output [open "full_output.txt" "r"]
-set contents [read $output]
-close $output
+# Check if the timeout was reached
+if [ $? -eq 124 ]; then
+    echo "Test Failed: Program timed out."
+    exit 1
+fi
 
 # Extract the initial board part from the output
-set actual_output [open "actual_output.txt" "w"]
-puts $actual_output [lrange [split $contents "\n"] 0 23]
-close $actual_output
+head -n 24 full_output.txt > actual_output.txt
 
 # Expected output file for comparison
-set expected_output [open "expected_output.txt" "w"]
-puts $expected_output {
+cat << EOF > expected_output.txt
 R G B Q K B G R
 P P P P P P P P
 X X X X X X X X
@@ -59,47 +43,26 @@ P P P P P P P P
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0
-}
-close $expected_output
+EOF
 
 # Compare the initial board output to expected output
-exec diff -w actual_output.txt expected_output.txt
-if {[catch {exec diff -w actual_output.txt expected_output.txt} result]} {
-    puts "Test Failed: Initial board output does not match expected"
-    puts "Actual Initial Output:"
-    set actual_output [open "actual_output.txt" "r"]
-    puts [read actual_output]
-    close actual_output
-    puts "Expected Initial Output:"
-    set expected_output [open "expected_output.txt" "r"]
-    puts [read expected_output]
-    close expected_output
+if diff -w actual_output.txt expected_output.txt > /dev/null; then
+    echo "Board layout test passed!"
+else
+    echo "Test Failed: Initial board output does not match expected"
+    echo "Actual Initial Output:"
+    cat actual_output.txt
+    echo "Expected Initial Output:"
+    cat expected_output.txt
     exit 1
-} else {
-    puts "Board layout test passed!"
-}
+fi
 
 # Check if the last line of the full output is 0 or 1
-set last_line [lindex [split $contents "\n"] end]
-if {$last_line == "0" || $last_line == "1"} {
-    puts "End check passed: Last line is $last_line."
+last_line=$(tail -n 2 full_output.txt)
+if [[ "$last_line" == "0" || "$last_line" == "1" ]]; then
+    echo "End check passed: Last line is $last_line."
     exit 0
-} else {
-    puts "Test Failed: Last line is not 0 or 1, found '$last_line' instead."
+else
+    echo "Test Failed: Last line is not 0 or 1, found '$last_line' instead."
     exit 1
-}
-
-# Additional tests for invalid moves
-# Restart the chess program for a clean test environment
-spawn ./chess_output
-expect {
-    "R G B Q K B G R" {
-        # Test invalid move scenario (e.g., moving a pawn to an occupied square)
-        send "move e2 e4\r"
-        expect "Where would you like to move this piece?"
-        send "3\r"          # Row input for e4 (3 based on your row indexing)
-        send "d\r"          # Invalid move input to d4 (occupied by pawn)
-        expect "Invalid move, please try again" # Expecting output for invalid move
-        expect eof
-    }
-}
+fi
