@@ -48,20 +48,44 @@ See steps below for a example compile and test run
 
 Explain how to run the automated tests for this system
 
-### Break down into end to end tests
+### Test Script Overview
 
-Explain what these tests test and why
+The test script, `test_output.sh`, automates the testing of the chess application by compiling the code, simulating user moves, and verifying the output against expected results.
 
-```
-Give an example
-```
+1. **Compile the Code**: Uses `gcc` to compile the necessary C files into the executable `chess_output`.
+2. **Run the Program**: Starts the chess application and sends initial moves to simulate a game.
+3. **Output Comparison**: Captures the program's output and compares it with the expected board layout.
+4. **Validation**: Checks if the last line of output is either `0` or `1` to confirm successful execution.
 
-### And coding style tests
+### GitHub Actions Workflow
 
-Explain what these tests test and why
+The following YAML file configures GitHub Actions to automate the testing process on every push or pull request:
 
-```
-Give an example
+```yaml
+name: Chess Application Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Expect environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
+
+      - name: Run tests with Expect
+        run: |
+          chmod +x test_output.sh
+          ./test_output.sh | tee test_log.txt  # Capture output for visibility in GitHub logs
+
+      - name: Display Test Log
+        run: cat test_log.txt
 ```
 
 ## Deployment
