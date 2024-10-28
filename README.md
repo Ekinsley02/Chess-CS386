@@ -108,7 +108,7 @@ Please read [CONTRIBUTING.md](https://github.com/Ekinsley02/Chess-CS386/blob/mai
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+For the versions releases available, see the [tags on this repository]([https://github.com/your/project/tags](https://github.com/Ekinsley02/Chess-CS386/releases/tag/Release)). 
 
 ## Authors
 
