@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the code
-gcc -o chess_output main.c chessUtility.c -I./
+gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./
 
 # Run the program and capture the output
 ./chess_output > full_output.txt
