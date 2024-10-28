@@ -4,8 +4,7 @@
 set compile_result [exec gcc -o chess_output main.c chessUtility.c pieceUtility.c -I./]
 if {$compile_result != ""} {
     puts "Compilation failed: $compile_result"
-    exit 1
-}
+    exit 1 }
 puts "Compilation succeeded."
 
 # Start the chess program
