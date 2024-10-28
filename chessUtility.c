@@ -1071,3 +1071,213 @@ void playGame( ChessBoardType **board )
    }
 
 
+/*
+Description: converts the given row into a usable index
+Input: initialRow
+Output: NONE
+Dependancies: NONE
+*/
+int rowToIndex( int initialRow )
+    {
+    // initialize functions/variables
+        // create a array of rows
+        int rowIndexes[ BOARD_SIZE ] = { 7, 6, 5, 4, 3, 2, 1, 0 };
+    
+    return rowIndexes[ initialRow - 1 ];
+    }
+
+/*
+Description: creates a new board with the players given move and analyses if it would put the king into check
+Input: board, initialRow, initialCol, chosenRow, chosenCol
+Output: if the players move will put the king into check
+Dependancies: isInCheck
+*/
+bool putsOpponentKingInCheck(ChessBoardType **board, char currentTurn, int currentRow, int currentCol)
+   {
+   // initialize functions/variables
+      char oppositeTurn;
+      
+   oppositeTurn = determineOppositeSide( currentTurn );
+   
+   return isInCheck( board, oppositeTurn, INCHECK );
+   }
+
+/*
+Description: creates a new board with the players given move and analyses if it would put the king into check
+Input: board, initialRow, initialCol, chosenRow, chosenCol
+Output: if the players move will put the king into check
+Dependancies: isInCheck
+*/
+bool putsOutOfCheck( ChessBoardType **board, char currentType, int initialRow, int initialCol, int currentRow, int currentCol, char currentTurn )
+   {
+   // intiialize functions/variables
+      ChessBoardType **checkedBoard;
+      
+   checkedBoard = initializeChessBoard( BOARD_SIZE, BOARD_SIZE );
+   
+   copyBoard( checkedBoard, board );
+   
+   pieceMoveHelper( checkedBoard, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+
+   
+   if( !isInCheck( checkedBoard, currentTurn, INCHECK ) )
+      {
+      
+      return true;
+      }
+   
+   return false;
+   }
+
+/*
+Description: creates a new board with the players given move and analyses if it would put the king into check
+Input: board, initialRow, initialCol, chosenRow, chosenCol
+Output: if the players move will put the king into check
+Dependancies: isInCheck
+*/
+bool putsOwnKingInCheck( ChessBoardType **board, char currentTurn, int initialRow, int initialCol, int currentRow, int currentCol )
+   {
+   // initialize functions/variables
+      ChessBoardType **checkedBoard;
+      int rowIndex;
+      char currentType, oppositeTurn;
+      bool result;
+   
+   checkedBoard = initializeChessBoard( BOARD_SIZE, BOARD_SIZE );
+   
+   copyBoard( checkedBoard, board );
+   
+   currentType = determineType( board, initialRow, initialCol );
+   
+   pieceMoveHelper( checkedBoard, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
+
+   oppositeTurn = determineOppositeSide( currentTurn );
+   
+   result = isInCheck( checkedBoard, oppositeTurn, PUTCHECK );
+   
+   // Free memory to avoid leaks
+   for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
+      {
+         
+      free(checkedBoard[ rowIndex ]);
+      }
+      
+   free( checkedBoard );
+   
+   return result;
+   }
+/*
+Description: checks if the current piece can attack
+Input: Current chess board, board row, board column
+Output: the given chess piece type
+Dependancies: highlightAttack, displayChessBoard, columnToIndex,
+ checkForBattle, movePiece
+*/
+void selectNextPosition(ChessBoardType **board, char currentType,
+                             char currentTurn, int initialRow, int initialCol, bool *validMove, bool inCheck)
+   {
+   // initialize functions/variables
+      int currentRow, colIndex, currentState = SELECTING;
+      char currentCol;
+      bool initialPawn;
+
+   // check if the piece is the first pawn used
+   if( currentTurn == 'P' && board[ initialRow ][ initialCol ].type == PAWN && initialRow == 6 )
+      {
+         
+      initialPawn = true;
+      }
+   else if( currentTurn == 'O' && board[ initialRow ][ initialCol ].type == PAWN && initialRow == 1 )
+      {
+         
+      initialPawn = true;
+      }
+   else
+      {
+         
+      initialPawn = false;
+      }
+
+   // not very optimum, uses currentRow/Col twice, hard to rework since checkIfValidPosition is used twice for every piece
+   if( checkIfValidPosition( board, currentType, currentTurn, initialRow, initialCol, initialRow, initialCol, &currentState, initialPawn ) )
+      {
+         
+      // highlight potential attack points using HIGHLIGHT flag
+      highlightAttack( board, initialRow, initialCol, currentType, currentTurn, HIGHLIGHT, currentState, initialPawn );
+
+      displayChessBoard( board, BOARD_SIZE, BOARD_SIZE );
+
+      highlightAttack( board, initialRow, initialCol, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn );
+      }
+
+   // change the state to moving a piece instead of selecting for highlighting
+   currentState = MOVING;
+
+   // prompt where the user would like to attack
+   printf( "\nWhere would you like to move this piece?" );
+   printf("\nenter row:");
+
+   scanf( "%d", &currentRow );
+   
+   currentRow = rowToIndex( currentRow );
+   
+   printf( "\nenter column:" );
+   
+   scanf( " %c", &currentCol );
+
+   // convert the column to index
+   colIndex = columnToIndex( currentCol );
+   
+
+   // check if valid position using moving piece conditions
+   if( ( inCheck && putsOutOfCheck( board, currentType, initialRow, initialCol, currentRow, currentCol, currentTurn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, initialRow, initialCol, currentRow, colIndex, &currentState, initialPawn ) ) )
+      {
+         
+      if( !putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, currentRow, colIndex ) )
+         {
+            
+         movePiece( board, currentTurn, currentRow, colIndex, currentState, initialRow, initialCol );
+         *validMove = true;
+         
+         if( putsOpponentKingInCheck( board, currentTurn, currentRow, colIndex ) )
+            {
+               
+            printf( "\nCheck!" );
+            }
+         }
+      else
+         {
+            
+         printf( "\nCannot put your own king in check, try again" );
+         *validMove = false;
+         }
+      }
+   else
+      {
+         
+      printf( "\nInvalid move, please try again" );
+      *validMove = false;
+      }
+   }
+
+
+/*
+Description: Switches the current turn to the opposite side
+Input: current turn
+Output: opposite side
+Dependancies: NONE
+*/
+char switchTurn( char currentTurn )
+   {
+
+   if( currentTurn == 'P' )
+      {
+
+      return 'O';
+      }
+   else
+      {
+
+      return 'P';
+      }
+   }
