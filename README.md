@@ -38,23 +38,22 @@ Download Zip file from {https://github.com/Ekinsley02/Chess-CS386}
 
 Extract the Downloaded ZIP File
 ```
-Locate the downloaded ZIP file on your device.
-Extract it to a preferred location. Remember the installation path for later deployment.
+1) Locate the downloaded ZIP file on your device.
+2) Extract it to a preferred location. Remember the installation path for later deployment.
 
 ```
 Open Windows PowerShell and Navigate to the Project Directory
 ```
-Change to the directory where the project files are located
-Command: cd .\[Specific File Path]\UChess
+# Change to the directory where the project files are located
+cd .\[Specific File Path]\UChess
 ```
 
 Compile the Source Code Using GCC
 ```
-Use GCC to compile the main files and create an executable named "chess"
-Command: gcc -Wall main.c chessUtility.c pieceUtility.c -o chess
+# Use GCC to compile the main files and create an executable named "chess"
+gcc -Wall main.c chessUtility.c pieceUtility.c -o chess
 ```
 ```
-
 See demo video below for a example compile and test run
 ```
 
