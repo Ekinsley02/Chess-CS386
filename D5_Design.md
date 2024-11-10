@@ -12,3 +12,15 @@ UChess is still in development, the application offers a simple user interface, 
 
 We designed it this way so we can have a front end interface using python, while using subprocess to use C as a backend. The way we layed out the architecture of this code allows the presentation and main game to remain as separate entity.
 
+### 3. Class Diagram
+
+**Present a refined class diagram of your system, including implementation details such as visibilities, attributes to represent associations, attribute types, return types, parameters, etc.**
+
+**![](https://cdn.discordapp.com/attachments/1278784448514625651/1305295592276230264/image.png?ex=673282c0&is=67313140&hm=db596b80371de1171796106fc83657b6525d073a788467aae65e48ebf5922cf0&)**
+
+
+### 4. Sequence Diagram
+
+**Present a sequence diagram that represents how the objects in your system interact for a specific use case. Also include the use case's description in this section. The sequence diagram should be consistent with the class diagram and architecture. **
+
+**![](https://cdn.discordapp.com/attachments/1278784448514625651/1305295683267596348/Screenshot_2024-11-10_142707.png?ex=673282d6&is=67313156&hm=c4c02c485dcc7bc48a2f6aa0077806070cee345b6ef4313a9d48a45d0ea24231&)**
