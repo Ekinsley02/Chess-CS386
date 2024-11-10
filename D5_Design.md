@@ -24,3 +24,31 @@ We designed it this way so we can have a front end interface using python, while
 **Present a sequence diagram that represents how the objects in your system interact for a specific use case. Also include the use case's description in this section. The sequence diagram should be consistent with the class diagram and architecture. **
 
 **![](https://cdn.discordapp.com/attachments/1278784448514625651/1305295683267596348/Screenshot_2024-11-10_142707.png?ex=673282d6&is=67313156&hm=c4c02c485dcc7bc48a2f6aa0077806070cee345b6ef4313a9d48a45d0ea24231&)**
+
+### 5. Design Patterns
+
+**Split this section into two subsections. For each subsection, present a UML class diagram showing the application of a design pattern to your system (a different pattern for each section). Each class diagram should contain only the classes involved in the specific pattern (you don’t need to represent the whole system). You are not limited to design patterns studied in class. You can pick any pattern, including those outside the Gang of Four (GoF) patterns.**
+
+5-1) Pattern Name: MVC Pattern
+Inital_Board, Current_Board, Move_Board: https://github.com/Ekinsley02/Chess-CS386/blob/main/main.c
+Chess Utility: https://github.com/Ekinsley02/Chess-CS386/blob/main/chessUtility.c
+
+**![](https://cdn.discordapp.com/attachments/1278784448514625651/1305295259659403304/Blank_diagram_-_Page_1.png?ex=67328271&is=673130f1&hm=9c65d7dbc711cb1b7b9b219ad19399ff961622ac4d5bde5243142b6b59893e13&)**
+
+5-2) Pattern Name: Command Pattern
+Subproccess https://github.com/Ekinsley02/Chess-CS386/blob/main/SubProcess.py
+Python Interface: https://github.com/Ekinsley02/Chess-CS386/blob/main/main.py
+
+**![](https://cdn.discordapp.com/attachments/1278784448514625651/1305296033940766801/Blank_diagram_-_Page_1_1.png?ex=67328329&is=673131a9&hm=0448f2c2a91952ecb8eaea86447863ab9be6083fca240aa73777c2453a6f2535&)**
+
+### 6. Design Principles
+
+**How does your design observe design principles? Provide a short description of the principles followed and concrete examples from your code. Describe at least two principles.**
+
+1. **Modularity**: The design follows modularity by separating different functionalities into distinct files, such as `main.c`, `chessUtility.c`, and `pieceUtility.c`. Each file handles specific parts of the chess application, like game logic and utility functions, which enables easier development, maintenance, and testing.
+
+2. **Encapsulation**: Encapsulation is observed through the use of functions within `chessUtility.c` and `pieceUtility.c`, which contain internal logic and expose only necessary methods to `main.c`. This keeps implementation details private, providing a clear interface for interacting with other components.
+
+For more information, refer to the [project repository](https://github.com/Ekinsley02/Chess-CS386).
+
+
