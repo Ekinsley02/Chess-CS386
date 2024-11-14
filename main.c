@@ -1,173 +1,111 @@
 #include "chessUtility.h"
 
 // Function to output the board and sides to subprocess (Python)
-void outputBoard(ChessBoardType **board, int gameCondition)
-   {
-   // initialize functions/variables
-      
-      int rowIndex, colIndex;
+void outputBoard(ChessBoardType **board, int gameCondition) {
+    int rowIndex, colIndex;
 
-   // Output board (piece types)
-   for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
-      {
-         
-      for (colIndex = 0; colIndex < BOARD_SIZE; colIndex++)
-         {
-         
-         printf("%c ", board[rowIndex][colIndex].type);
-         }
-         
-      printf("\n");
-      fflush(stdout);
-      }
-   
-   // Output sides (Player or Opponent)
-   for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
-      {
-      for (colIndex = 0; colIndex < BOARD_SIZE; colIndex++)
-         {
-            
-         printf("%c ", board[rowIndex][colIndex].side);
-         }
-         
-      printf("\n");
-      fflush(stdout);
-      }
-      
-   // Output highlights (1 or 0 dependining on highlight)
-   for( rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++ )
-      {
-         
-      for( colIndex = 0; colIndex < BOARD_SIZE; colIndex++ )
-         {
-            
-         printf("%d ", board[rowIndex][colIndex].highlight);
-         }
-         
-      printf("\n");
-      fflush(stdout);
-      }
-   
-   
-   printf("%d\n", gameCondition);
-   }
-
-int main()
-   {
-   
-   // initialize functions/variables
-      ChessBoardType **board;
-      
-      char currentType, currentTurn;
-      
-      bool initialPawn = false, gameRunning = true;
-      
-      int start_row = 0, start_col = 0, end_row = 0, end_col = 0;
-      
-      int currentState = SELECTING, gameCondition = 0;
-      
-      bool inCheck = false;
-      
-   // create game board array
-   board = initializeChessBoard( );
-   
-   // fill the game board with the pieces
-   board = fillBoard( board );
-   
-   // Ensure stdout is unbuffered
-   setbuf(stdout, NULL);
-   
-   // Output initial board
-   outputBoard( board, gameCondition );
-   
-   currentTurn = 'P';
-   
-   while (gameRunning)
-      {
-      
-      initialPawn = false;
-      inCheck = false;
-      
-      gameCondition = 0;
-      
-      if( isInCheck( board, currentTurn, INCHECK ) && !isCheckmate( board, currentTurn, NONE ) )
-         {  
-         
-         gameCondition = 1;
-         }
-      
-      
-      else if( isStalemate( board, currentTurn ) )
-         {
-        
-         gameCondition = 2;
-         }
-      
-      if( gameCondition == 1 || gameCondition == 2 )
-         {
-         
-         gameRunning = false;
-         break;
-         }
-         
-
-      scanf( "%d %d", &start_row, &start_col );
-         
-      currentType = board[start_row][start_col].type;
-
-      // Check if the piece is the first pawn moved
-      if( start_row == 6 && currentTurn == 'P' && currentType == PAWN )
-         {
-            
-         initialPawn = true;
-         }
-        
-      else if ( start_row == 1 && currentTurn == 'O' && currentType == PAWN )
-        {
-           
-         initialPawn = true;
+    // Output board (piece types)
+    for (rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++) {
+        for (colIndex = 0; colIndex < BOARD_SIZE; colIndex++) {
+            printf("%c ", board[rowIndex][colIndex].type);
         }
-      
-      
-      // Process the move if valid for highlighting
-      if( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, start_row, start_col, &currentState, initialPawn ) )
-         {
+        printf("\n");
+    }
 
-         highlightAttack( board, start_row, start_col, currentType, currentTurn, HIGHLIGHT, currentState, initialPawn );
-            
-         fflush(stdout);
-         }
-         
-      outputBoard( board, gameCondition );
+    // Output sides (Player or Opponent)
+    for (rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++) {
+        for (colIndex = 0; colIndex < BOARD_SIZE; colIndex++) {
+            printf("%c ", board[rowIndex][colIndex].side);
+        }
+        printf("\n");
+    }
 
-      scanf( "%d %d", &end_row, &end_col );
+    // Output highlights (1 or 0 depending on highlight)
+    for (rowIndex = 0; rowIndex < BOARD_SIZE; rowIndex++) {
+        for (colIndex = 0; colIndex < BOARD_SIZE; colIndex++) {
+            printf("%d ", board[rowIndex][colIndex].highlight);
+        }
+        printf("\n");
+    }
 
-      highlightAttack( board, start_row, start_col, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn );
-   
-      currentState = MOVING;
-      
-      if( isInCheck( board, currentTurn, INCHECK ) )
-         {
-         
-         inCheck = true;
-         }
-        
-      // Process the move if valid for moving
-      if( ( inCheck && putsOutOfCheck( board, currentType, start_row, start_col, end_row, end_col, currentTurn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, end_row, end_col, &currentState, initialPawn ) ) )
-         {
-            
-         if( !putsOwnKingInCheck( board, currentTurn, start_row, start_col, end_row, end_col ) )
-            {
-               
-            movePiece(board, currentTurn, end_row, end_col, currentState, start_row, start_col);
-            
-            currentTurn = switchTurn( currentTurn );  
-            
+    // Output game condition
+    printf("%d\n", gameCondition);
+}
+
+int main() {
+    ChessBoardType **board;
+    char currentType, currentTurn;
+    bool initialPawn = false, gameRunning = true;
+    int start_row = 0, start_col = 0, end_row = 0, end_col = 0;
+    int currentState = SELECTING, gameCondition = 0;
+    bool inCheck = false;
+
+    // Ensure stdout is unbuffered
+    setbuf(stdout, NULL);
+
+    // Initialize game board
+    board = initializeChessBoard();
+    board = fillBoard(board);
+
+    // Output initial board state
+    outputBoard(board, gameCondition);
+
+    // Game loop
+    currentTurn = 'P';
+    while (gameRunning) {
+        initialPawn = false;
+        inCheck = false;
+        gameCondition = 0;
+
+        // Check game condition
+        if (isInCheck(board, currentTurn, INCHECK) && !isCheckmate(board, currentTurn, NONE)) {
+            gameCondition = 1;
+        } else if (isStalemate(board, currentTurn)) {
+            gameCondition = 2;
+        }
+
+        if (gameCondition == 1 || gameCondition == 2) {
+            gameRunning = false;
+            break;
+        }
+
+        // Read start move
+        scanf("%d %d", &start_row, &start_col);
+        currentType = board[start_row][start_col].type;
+
+        // Check if the piece is the first pawn moved
+        if ((start_row == 6 && currentTurn == 'P' && currentType == PAWN) ||
+            (start_row == 1 && currentTurn == 'O' && currentType == PAWN)) {
+            initialPawn = true;
+        }
+
+        // Process the move if valid for highlighting
+        if (checkIfValidPosition(board, currentType, currentTurn, start_row, start_col, start_row, start_col, &currentState, initialPawn)) {
+            highlightAttack(board, start_row, start_col, currentType, currentTurn, HIGHLIGHT, currentState, initialPawn);
+        }
+
+        // Output board after highlighting
+        outputBoard(board, gameCondition);
+
+        // Read end move
+        scanf("%d %d", &end_row, &end_col);
+        highlightAttack(board, start_row, start_col, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn);
+
+        currentState = MOVING;
+
+        // Process the move if valid for moving
+        if ((inCheck && putsOutOfCheck(board, currentType, start_row, start_col, end_row, end_col, currentTurn)) ||
+            (checkIfValidPosition(board, currentType, currentTurn, start_row, start_col, end_row, end_col, &currentState, initialPawn))) {
+            if (!putsOwnKingInCheck(board, currentTurn, start_row, start_col, end_row, end_col)) {
+                movePiece(board, currentTurn, end_row, end_col, currentState, start_row, start_col);
+                currentTurn = switchTurn(currentTurn);
             }
-         }
-      
-      outputBoard( board, gameCondition );
-      
-      currentState = SELECTING;
-      }
-	}
+        }
+
+        // Output board after move
+        outputBoard(board, gameCondition);
+        currentState = SELECTING;
+    }
+
+    return 0;
+}
