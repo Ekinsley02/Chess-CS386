@@ -38,26 +38,28 @@ class ChessEngine:
         game_condition = 0  # Default to 0 (no condition)
 
         try:
-            if include_condition:
-                # Attempt to read the gameCondition first
-                condition_line = self.output_queue.get(timeout=10)
-                if condition_line.isdigit():
-                    game_condition = int(condition_line)
-                    print(f"Game Condition: {game_condition}")  # Debugging
-                else:
-                    print(f"Unexpected game condition line: {condition_line}")
             while len(output_lines) < expected_lines:
                 line = self.output_queue.get(timeout=10)
-                if len(line.split()) == 8:  # Only consider lines with 8 space-separated items
-                    output_lines.append(line)
+                if len(line.strip().split()) == 8:  # Only consider lines with 8 space-separated items
+                    output_lines.append(line.strip())
                 else:
                     # Debugging: Print skipped lines
-                    print(f"Skipped non-board line: {line}")
+                    print(f"Skipped non-board line: {line.strip()}")
+
+            if include_condition:
+                # After collecting the board output, read the game condition
+                condition_line = self.output_queue.get(timeout=10)
+                if condition_line.strip().isdigit():
+                    game_condition = int(condition_line.strip())
+                    print(f"Game Condition: {game_condition}")
+                else:
+                    print(f"Unexpected game condition line: {condition_line.strip()}")
+
         except queue.Empty:
             if include_condition:
-                print("Timeout while waiting for game condition and output from C program.")
+                print("Timeout while waiting for board data and game condition from C program.")
             else:
-                print("Timeout while waiting for output from C program.")
+                print("Timeout while waiting for board data from C program.")
 
         if include_condition:
             return game_condition, output_lines

@@ -413,7 +413,7 @@ void movePiece( ChessBoardType **board, char currentTurn,
                                int currentRow, int currentCol, int currentState,
                                                 int initialRow, int initialCol);
 
-void outputBoard( ChessBoardType **board, int gameCondition );
+void outputBoard(ChessBoardType **board, int gameCondition);
 
 /*
 Description: Starts the game off and handles events

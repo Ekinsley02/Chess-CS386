@@ -8,6 +8,8 @@
 
 // function definitions
 
+
+
 /*
 Description: checks if the player can move a piece to block the current check using copied board method
 and checks if the current piece has no obstructions.
@@ -181,7 +183,6 @@ bool checkIfValidPosition( ChessBoardType **board, char currentType,
    return false;
    }
 
-
 /*
 Description: converts the players column input to an index
 Input: players chosen column
@@ -243,7 +244,6 @@ int columnToIndex( char chosenCol )
 
    }
 
-
 /*
 Description: Copies the current board to another board, used for looking into the next move
 Input: destination board, source board
@@ -269,7 +269,6 @@ void copyBoard( ChessBoardType **destinationBoard, ChessBoardType **sourceBoard 
       }
    
    }
-
 
 /*
 Description: determines the opposite side guven the current side
@@ -779,7 +778,7 @@ void highlightAttack( ChessBoardType **board, int initialRow, int initialCol,
             }
          }
       }
-   }
+   }  
 
 /*
 Description: Allocates memory for the chess board.
@@ -1069,7 +1068,6 @@ void playGame( ChessBoardType **board )
          }    
       }
    }
-
 
 /*
 Description: converts the given row into a usable index

@@ -153,7 +153,7 @@ bool checkIfAllValidBishopPositions( ChessBoardType **board, ChessBoardType **ch
    }
 
 /*
-Description: checks all valid positions for the King
+Description: checks all valid positions for the rook
 Input: Current chess board, board row, board column
 Output: the given chess piece type
 Dependancies: NONE
@@ -1413,6 +1413,7 @@ bool checkKnightPositions( ChessBoardType **board, char currentTurn, int current
 
    return false;
    }
+
 /*
 Description: compares every viable pawn position with current row
  and current collumn
@@ -2015,6 +2016,7 @@ void highlightKing( ChessBoardType **board, char currentTurn, int initialRow, in
             }
         }
     }
+
 /*
 Description: highlights the potential attack positions for knight
 Input: chessboard, currentRow, currentCol, initial row, initial collomn
@@ -2184,9 +2186,6 @@ void highlightKnight( ChessBoardType **board, char currentTurn, int initialRow, 
    }
 
 
-
-
-
 /*
 Description: highlights the potential attack positions for rook
 Input: chessboard, currentRow, currentCol, initial row, initial collomn
@@ -2339,9 +2338,3 @@ void pieceMoveHelper( ChessBoardType **board, int initialRow, int initialCol, in
    board[ initialRow ][ initialCol ].type = 'X';
    board[ initialRow ][ initialCol ].side = NON_PLAYER;
   }
-
-
-
-
-
-

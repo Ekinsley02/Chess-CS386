@@ -48,8 +48,6 @@ void outputBoard(ChessBoardType **board, int gameCondition)
       fflush(stdout);
       }
    
-   
-   printf("%d\n", gameCondition);
    }
 
 int main()
@@ -88,8 +86,6 @@ int main()
       initialPawn = false;
       inCheck = false;
       
-      gameCondition = 0;
-      
       if( isInCheck( board, currentTurn, INCHECK ) && !isCheckmate( board, currentTurn, NONE ) )
          {  
          
@@ -107,9 +103,10 @@ int main()
          {
          
          gameRunning = false;
-         break;
+         outputBoard( board, gameCondition );
          }
-         
+      
+       printf("%d\n", gameCondition);
 
       scanf( "%d %d", &start_row, &start_col );
          
