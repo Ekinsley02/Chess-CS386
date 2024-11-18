@@ -329,6 +329,26 @@ async def main( c_engine ):
 
                 run = False
 
+            # **Check for game over condition immediately**
+            if game_state.game_condition in [1, 2]:
+                # Handle game over conditions
+                game_state.board = game_state.new_board if game_state.new_board else game_state.board
+                game_state.sides = game_state.new_sides if game_state.new_sides else game_state.sides
+                game_state.highlights = game_state.new_highlights if game_state.new_highlights else game_state.highlights
+                
+                print_board_state(game_state.board, game_state.sides)
+                draw_chessboard(WIN)
+                draw_highlights(WIN, game_state.highlights)
+                draw_selected(WIN, game_state.selected_pos)
+                draw_pieces(WIN, game_state.board, game_state.sides)
+                draw_turn_indicator(WIN)
+                draw_game_condition(WIN, game_state.game_condition)
+                
+                pygame.display.update()
+                await asyncio.sleep(3)
+                run = False  # End the game loop
+                break  # Exit the event handling loop
+
             # check for mouseclick
             if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -377,49 +397,28 @@ async def main( c_engine ):
 
                 # otherwise, its in the moving state (post selecting)
                 else:
-
                     # assign the end row/col (where the user selected)
                     end_row, end_col = row, col 
 
                     # move the pieces using chess engine, capture pieces, highlights, and sides
-                    game_state.game_condition, game_state.new_board, game_state.new_sides, game_state.new_highlights = c_engine.move_piece( end_row, end_col )
-                    
-                    # **Check for game over condition immediately**
-                    if game_state.game_condition in [1, 2]:
-                        # Handle game over conditions
-                        game_state.board = game_state.new_board if game_state.new_board else chess_board
-                        chess_sides = game_state. new_sides if game_state.new_sides else chess_sides
-                        chess_highlights = game_state.new_highlights if game_state.new_highlights else chess_highlights
-                        print_board_state(chess_board, chess_sides)
-                        draw_chessboard(WIN)
-                        draw_highlights(WIN, game_state.highlights)
-                        draw_selected(WIN, game_state.selected_pos)
-                        draw_pieces(WIN, game_state.board, game_state.sides)
-                        draw_turn_indicator(WIN )
-                        draw_game_condition(WIN, game_state.game_condition)
-                        pygame.display.update()
-                        await asyncio.sleep(3)
-                        run = False  # End the game loop
-                        break  # Exit the event handling loop
+                    game_state.game_condition, game_state.new_board, game_state.new_sides, game_state.new_highlights = c_engine.move_piece(end_row, end_col)
 
                     # Check if the move was valid by comparing boards
                     if game_state.new_board and not boards_are_equal(game_state.new_board, game_state.board):
-
-                        # Move was valid, move the pieces in python
-                        chess_board = game_state.new_board
-                        chess_sides = game_state.new_sides
+                        # Move was valid, update the boards in game_state
+                        game_state.update_board(game_state.new_board, game_state.new_sides, game_state.new_highlights)
 
                         print("After move:")
                         print_board_state(game_state.board, game_state.sides)
 
-                        game_state.switch_player
-                        # Reset selection for the next move
+                        # Switch to the other player
+                        game_state.switch_player()
+
                     else:
-                        # Move was invalid
-                        # Do not reset selection; allow the player to try again
+                        # Move was invalid, allow the player to try again without resetting selection
                         print("Invalid move. Please try again.")
 
-                    game_state.highlights = game_state.new_highlights
+                    # Reset selection for the next move
                     game_state.selected_piece = None
                     game_state.move_from = None
                     game_state.selected_pos = None
