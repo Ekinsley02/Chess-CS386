@@ -4,6 +4,7 @@ from SubProcess import ChessEngine
 import sys
 import asyncio
 import time
+from GameState import GameState
 
 # Initialize pygame
 pygame.init()
@@ -73,11 +74,7 @@ WIN = pygame.display.set_mode( ( WIDTH, HEIGHT ) )
 # set the window caption to chess
 pygame.display.set_caption('Chess')
 
-# initialize global selected piece as NONE
-selected_piece = None 
-
-# starting square set to NONE
-move_from = None
+game_state = GameState()
 
 # Function name: draw_chessboard
 # Process: creates a board of squares for rows and columns (8 for both)
@@ -216,13 +213,13 @@ def get_board_pos( x, y ):
 # Input: current window, current side
 # Output: side indicator at the top left of window
 # Dependencies: blit
-def draw_turn_indicator( win, current_player ):
+def draw_turn_indicator( win ):
 
     # initialize font for text
     font = pygame.font.Font( None, 36 )
 
     # check if the current side is white
-    if current_player == 'P':
+    if game_state.current_player == 'P':
 
         # render the text with given font
         text = font.render( "White's Turn", True, WHITE )
@@ -307,16 +304,10 @@ def boards_are_equal(board1, board2):
 # Input: pieces, sides, and highlight board states (2D arrays), c_engine (subproccess)
 # Output: board conditions to terminal
 # Dependencies: print
-async def main( chess_board, chess_sides, chess_highlights, c_engine ):
+async def main( c_engine ):
 
     # create a clock for framerate
     clock = pygame.time.Clock()
-
-    # initialize global variables
-    global selected_piece, move_from
-    current_player = 'P'
-    selected_pos = None
-    game_condition = 0
 
     # initilaize local variables
     run = True
@@ -337,7 +328,7 @@ async def main( chess_board, chess_sides, chess_highlights, c_engine ):
             if event.type == pygame.QUIT:
 
                 run = False
-            
+
             # check for mouseclick
             if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -348,100 +339,97 @@ async def main( chess_board, chess_sides, chess_highlights, c_engine ):
                 row, col = get_board_pos(x, y)
 
                 # check to see if this is the first click (selecting)
-                if not selected_piece:
-                    
+                if not game_state.selected_piece:
+
                     # get the current piece type
-                    selected_piece = chess_board[ row ][ col ]
+                    game_state.selected_piece = game_state.board[ row ][ col ]
                     
                     # get the current piece side (either (O)ponent, (P)layer)
-                    side = chess_sides[ row ][ col ]
+                    game_state.sides = game_state.sides[ row ][ col ]
 
                     # check to see if the selected side is current player
                         # and not empty (no pieces)
-                    if side == current_player and selected_piece != 'X':
+                    if game_state.sides == game_state.current_player and game_state.selected_piece != 'X':
                         
                         # keep track of initial position
-                        move_from = ( row, col )
+                        game_state.move_from = ( row, col )
 
                         # asssign the selected position
-                        selected_pos = (row, col)
+                        game_state.selected_pos = (row, col)
 
                         # Send the selection to C program to get highlights
-                        game_condition, new_board, new_sides, new_highlights = c_engine.select_piece( row, col )
+                        game_state.game_condition, game_state.board, game_state.sides, game_state.highlights = c_engine.select_piece( row, col )
                         
                         # check to see if there is new information
-                        if new_board and new_sides and new_highlights:
+                        if game_state.new_board and game_state.new_sides and game_state.new_highlights:
 
                             # make the conditional boards equal the updated board
-                            chess_board = new_board
-                            chess_sides = new_sides
-                            chess_highlights = new_highlights
+                            game_state.update_board( game_state.board, game_state.sides, game_state.highlights )
 
                             # this is for debugging shows the board after selection
                             print( "After selection:" )
-                            print_board_state( chess_board, chess_sides )
+                            print_board_state( game_state.board, game_state.sides )
 
                     # otherwise ignore since its not the players piece
                     else:
-                        selected_piece = None
-                        selected_pos = None
+                        game_state.selected_piece = None
+                        game_state.selected_pos = None
 
                 # otherwise, its in the moving state (post selecting)
                 else:
 
                     # assign the end row/col (where the user selected)
-                    end_row, end_col = row, col
+                    end_row, end_col = row, col 
 
                     # move the pieces using chess engine, capture pieces, highlights, and sides
-                    game_condition, new_board, new_sides, new_highlights = c_engine.move_piece( end_row, end_col )
+                    game_state.game_condition, game_state.new_board, game_state.new_sides, game_state.new_highlights = c_engine.move_piece( end_row, end_col )
                     
                     # **Check for game over condition immediately**
-                    if game_condition in [1, 2]:
+                    if game_state.game_condition in [1, 2]:
                         # Handle game over conditions
-                        chess_board = new_board if new_board else chess_board
-                        chess_sides = new_sides if new_sides else chess_sides
-                        chess_highlights = new_highlights if new_highlights else chess_highlights
+                        game_state.board = game_state.new_board if game_state.new_board else chess_board
+                        chess_sides = game_state. new_sides if game_state.new_sides else chess_sides
+                        chess_highlights = game_state.new_highlights if game_state.new_highlights else chess_highlights
                         print_board_state(chess_board, chess_sides)
                         draw_chessboard(WIN)
-                        draw_highlights(WIN, chess_highlights)
-                        draw_selected(WIN, selected_pos)
-                        draw_pieces(WIN, chess_board, chess_sides)
-                        draw_turn_indicator(WIN, current_player)
-                        draw_game_condition(WIN, game_condition)
+                        draw_highlights(WIN, game_state.highlights)
+                        draw_selected(WIN, game_state.selected_pos)
+                        draw_pieces(WIN, game_state.board, game_state.sides)
+                        draw_turn_indicator(WIN )
+                        draw_game_condition(WIN, game_state.game_condition)
                         pygame.display.update()
                         await asyncio.sleep(3)
                         run = False  # End the game loop
                         break  # Exit the event handling loop
 
                     # Check if the move was valid by comparing boards
-                    if new_board and not boards_are_equal(new_board, chess_board):
+                    if game_state.new_board and not boards_are_equal(game_state.new_board, game_state.board):
 
                         # Move was valid, move the pieces in python
-                        chess_board = new_board
-                        chess_sides = new_sides
+                        chess_board = game_state.new_board
+                        chess_sides = game_state.new_sides
 
                         print("After move:")
-                        print_board_state(chess_board, chess_sides)
+                        print_board_state(game_state.board, game_state.sides)
 
-                        # Switch sides after a successful move
-                        current_player = 'O' if current_player == 'P' else 'P'
+                        game_state.switch_player
                         # Reset selection for the next move
                     else:
                         # Move was invalid
                         # Do not reset selection; allow the player to try again
                         print("Invalid move. Please try again.")
 
-                    chess_highlights = new_highlights
-                    selected_piece = None
-                    move_from = None
-                    selected_pos = None
+                    game_state.highlights = game_state.new_highlights
+                    game_state.selected_piece = None
+                    game_state.move_from = None
+                    game_state.selected_pos = None
 
         # Draw everything
         draw_chessboard( WIN )
-        draw_highlights( WIN, chess_highlights )
-        draw_selected( WIN, selected_pos )
-        draw_pieces( WIN, chess_board, chess_sides )
-        draw_turn_indicator( WIN, current_player )
+        draw_highlights( WIN, game_state.highlights )
+        draw_selected( WIN, game_state.selected_pos )
+        draw_pieces( WIN, game_state.board, game_state.sides )
+        draw_turn_indicator( WIN )
 
         pygame.display.update()
 
@@ -454,21 +442,21 @@ if __name__ == "__main__":
 
     # if the proper information is uploaded, display it to terminal (for debug)
     try:
-        chess_board, chess_sides, chess_highlights = c_engine.get_initial_board()
-        if chess_board and chess_sides and chess_highlights:
+        game_state.board, game_state.sides, game_state.highlights = c_engine.get_initial_board()
+        if game_state.board and game_state.sides and game_state.highlights:
             print("Initial Chess Board:")
-            for row in chess_board:
+            for row in game_state.board:
                 print(" ".join(row))
 
             print("\nInitial Chess Sides:")
-            for row in chess_sides:
+            for row in game_state.sides:
                 print(" ".join(row))
 
             print("\nInitial Chess Highlights:")
-            for row in chess_highlights:
+            for row in game_state.highlights:
                 print(" ".join(row))
 
-            asyncio.run(main(chess_board, chess_sides, chess_highlights, c_engine))
+            asyncio.run(main(c_engine))
         else:
             print("Failed to receive initial board data.")
     

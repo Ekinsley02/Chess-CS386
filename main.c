@@ -47,7 +47,6 @@ void outputBoard(ChessBoardType **board, int gameCondition)
       printf("\n");
       fflush(stdout);
       }
-   
    }
 
 int main()
@@ -105,9 +104,7 @@ int main()
          gameRunning = false;
          outputBoard( board, gameCondition );
          }
-      
-       printf("%d\n", gameCondition);
-
+      printf("%d\n", gameCondition);
       scanf( "%d %d", &start_row, &start_col );
          
       currentType = board[start_row][start_col].type;
