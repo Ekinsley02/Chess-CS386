@@ -342,37 +342,34 @@ async def main( c_engine ):
 
                 # check to see if this is the first click (selecting)
                 if not game_state.selected_piece:
-
                     # get the current piece type
-                    game_state.selected_piece = game_state.board[ row ][ col ]
-                    
+                    game_state.selected_piece = game_state.board[row][col]
+
                     # get the current piece side (either (O)ponent, (P)layer)
-                    game_state.sides = game_state.sides[ row ][ col ]
+                    selected_side = game_state.sides[row][col]
 
                     # check to see if the selected side is current player
-                        # and not empty (no pieces)
-                    if game_state.sides == game_state.current_player and game_state.selected_piece != 'X':
-                        
+                    # and not empty (no pieces)
+                    if selected_side == game_state.current_player and game_state.selected_piece != 'X':
                         # keep track of initial position
-                        game_state.move_from = ( row, col )
+                        game_state.move_from = (row, col)
 
-                        # asssign the selected position
+                        # assign the selected position
                         game_state.selected_pos = (row, col)
 
                         # Send the selection to C program to get highlights
-                        game_state.game_condition, game_state.board, game_state.sides, game_state.highlights = c_engine.select_piece( row, col )
-                        
+                        game_state.game_condition, game_state.board, game_state.sides, game_state.highlights = c_engine.select_piece(row, col)
+
                         # check to see if there is new information
                         if game_state.new_board and game_state.new_sides and game_state.new_highlights:
-
                             # make the conditional boards equal the updated board
-                            game_state.update_board( game_state.board, game_state.sides, game_state.highlights )
+                            game_state.update_board(game_state.board, game_state.sides, game_state.highlights)
 
                             # this is for debugging shows the board after selection
-                            print( "After selection:" )
-                            print_board_state( game_state.board, game_state.sides )
+                            print("After selection:")
+                            print_board_state(game_state.board, game_state.sides)
 
-                    # otherwise ignore since its not the players piece
+                    # otherwise ignore since it's not the player's piece
                     else:
                         game_state.selected_piece = None
                         game_state.selected_pos = None
