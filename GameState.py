@@ -1,3 +1,6 @@
+#define constants
+MENU = 'MENU'
+
 class GameState:
     def __init__(self):
         self.board = None
@@ -18,6 +21,8 @@ class GameState:
         self.current_player = 'P'
         self.game_condition = 0
 
+        self.state = MENU
+
     def update_board( self, board, sides, highlights ):
         
         self.board = board
@@ -28,7 +33,7 @@ class GameState:
 
         self.selected_piece = None
         self.move_from = None
-        self.selected_pos
+        self.selected_pos = None
     
     def switch_player( self ):
 
