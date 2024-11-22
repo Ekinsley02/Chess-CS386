@@ -321,7 +321,7 @@ def main_menu():
                     pygame.quit()
                     sys.exit()
         
-        WIN.fill(BLACK)
+        WIN.fill(BROWN)
         
         font = pygame.font.Font(None, 74)
         title_text = font.render("Chess Game", True, WHITE)
