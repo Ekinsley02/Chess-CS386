@@ -159,6 +159,8 @@ def draw_pieces(win, board, sides):
             # assign the current side
             side = sides[ row ][ col ]
 
+            pygame_piece = '--'
+
             # check if the current square is empty
             if piece == 'X':
                 pygame_piece = '--'  # No piece for an empty square
@@ -329,26 +331,6 @@ async def main( c_engine ):
 
                 run = False
 
-            # **Check for game over condition immediately**
-            if game_state.game_condition in [1, 2]:
-                # Handle game over conditions
-                game_state.board = game_state.new_board if game_state.new_board else game_state.board
-                game_state.sides = game_state.new_sides if game_state.new_sides else game_state.sides
-                game_state.highlights = game_state.new_highlights if game_state.new_highlights else game_state.highlights
-                
-                print_board_state(game_state.board, game_state.sides)
-                draw_chessboard(WIN)
-                draw_highlights(WIN, game_state.highlights)
-                draw_selected(WIN, game_state.selected_pos)
-                draw_pieces(WIN, game_state.board, game_state.sides)
-                draw_turn_indicator(WIN)
-                draw_game_condition(WIN, game_state.game_condition)
-                
-                pygame.display.update()
-                await asyncio.sleep(3)
-                run = False  # End the game loop
-                break  # Exit the event handling loop
-
             # check for mouseclick
             if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -394,7 +376,6 @@ async def main( c_engine ):
                     else:
                         game_state.selected_piece = None
                         game_state.selected_pos = None
-
                 # otherwise, its in the moving state (post selecting)
                 else:
                     # assign the end row/col (where the user selected)
@@ -402,6 +383,26 @@ async def main( c_engine ):
 
                     # move the pieces using chess engine, capture pieces, highlights, and sides
                     game_state.game_condition, game_state.new_board, game_state.new_sides, game_state.new_highlights = c_engine.move_piece(end_row, end_col)
+                    
+                    # **Check for game over condition immediately**
+                    if game_state.game_condition in [1, 2]:
+                        # Handle game over conditions
+                        game_state.board = game_state.new_board if game_state.new_board else game_state.board
+                        game_state.sides = game_state.new_sides if game_state.new_sides else game_state.sides
+                        game_state.highlights = game_state.new_highlights if game_state.new_highlights else game_state.highlights
+                        
+                        print_board_state(game_state.board, game_state.sides)
+                        draw_chessboard(WIN)
+                        draw_highlights(WIN, game_state.highlights)
+                        draw_selected(WIN, game_state.selected_pos)
+                        draw_pieces(WIN, game_state.board, game_state.sides)
+                        draw_turn_indicator(WIN)
+                        draw_game_condition(WIN, game_state.game_condition)
+                        
+                        pygame.display.update()
+                        await asyncio.sleep(3)
+                        run = False  # End the game loop
+                        break  # Exit the event handling loop
 
                     # Check if the move was valid by comparing boards
                     if game_state.new_board and not boards_are_equal(game_state.new_board, game_state.board):
@@ -419,10 +420,18 @@ async def main( c_engine ):
                         print("Invalid move. Please try again.")
 
                     # Reset selection for the next move
+                    game_state.highlights = game_state.new_highlights
                     game_state.selected_piece = None
                     game_state.move_from = None
                     game_state.selected_pos = None
 
+        print("\nTESTING:")
+        for row_index in range(len(game_state.sides)):
+            for col_index in range(len(game_state.sides[row_index])):
+                print("{}".format(game_state.sides[row_index][col_index]), end=' ')
+            print()  # Move to the next line after each row
+        print("\n")
+        
         # Draw everything
         draw_chessboard( WIN )
         draw_highlights( WIN, game_state.highlights )
