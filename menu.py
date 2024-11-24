@@ -31,6 +31,8 @@ def get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, prompt, y_offset):
     active = False
     user_text = ""
 
+    back_button_rect = pygame.Rect(50, 50, 100, 40)  # Position and size of the "Back" button
+
     run = True
     while run:
         WIN.fill(BROWN)
@@ -43,6 +45,12 @@ def get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, prompt, y_offset):
         WIN.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
         input_rect.w = max(200, text_surface.get_width() + 10)
 
+        # Draw the "Back" button
+        pygame.draw.rect(WIN, (200, 0, 0), back_button_rect)  # Red color for "Back" button
+        back_text = font.render("Back", True, WHITE)
+        back_text_rect = back_text.get_rect(center=back_button_rect.center)
+        WIN.blit(back_text, back_text_rect)
+
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -50,6 +58,8 @@ def get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, prompt, y_offset):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button_rect.collidepoint(event.pos):
+                    return None  # Return None to indicate "Back" was clicked
                 # Toggle active state if clicked inside the input box
                 if input_rect.collidepoint(event.pos):
                     active = not active
@@ -72,7 +82,14 @@ def signup(WIN, WIDTH, HEIGHT, BROWN, WHITE):
     run = True
     while run:
         username = get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, "Enter Username:", -50)
+        if username is None:
+            # User clicked "Back"
+            return False  # Return False to indicate to go back
+
         password = get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, "Enter Password:", 10)
+        if password is None:
+            # User clicked "Back"
+            return False  # Return False to indicate to go back
 
         # Load credentials and check if username already exists
         credentials = load_credentials()
@@ -96,13 +113,21 @@ def signup(WIN, WIDTH, HEIGHT, BROWN, WHITE):
             pygame.display.update()
             pygame.time.wait(2000)
             run = False
+    return True  # Return True to indicate signup completed
 
 def login(WIN, WIDTH, HEIGHT, BROWN, WHITE, game_state, logged_in):
     """Prompt the user to log in."""
     run = True
     while run:
         username = get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, "Enter Username:", -50)
+        if username is None:
+            # User clicked "Back"
+            return logged_in, False  # Return logged_in and False to indicate to go back
+
         password = get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, "Enter Password:", 10)
+        if password is None:
+            # User clicked "Back"
+            return logged_in, False  # Return logged_in and False to indicate to go back
 
         # Load credentials and validate login
         credentials = load_credentials()
@@ -124,7 +149,7 @@ def login(WIN, WIDTH, HEIGHT, BROWN, WHITE, game_state, logged_in):
             WIN.blit(error_surface, (WIDTH // 2 - 200, HEIGHT // 2))
             pygame.display.update()
             pygame.time.wait(2000)
-    return logged_in
+    return logged_in, True  # Return logged_in and True to continue
 
 def draw_button(win, text, x, y, width, height, color, text_color):
     """Draw a button and return True if clicked."""
@@ -165,14 +190,20 @@ def login_menu(WIN, WIDTH, HEIGHT, BROWN, CREAM, BLACK, WHITE, game_state, logge
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if login_hover:
-                    logged_in = login(WIN, WIDTH, HEIGHT, BROWN, WHITE, game_state, logged_in)
-                    if logged_in:
+                    logged_in, continue_to_menu = login(WIN, WIDTH, HEIGHT, BROWN, WHITE, game_state, logged_in)
+                    if logged_in and continue_to_menu:
                         print("Login successful! Transitioning to MENU...")  # Debug
                         game_state.state = 'MENU'  # Set the state to MENU
                         menu_run = False
+                    elif not continue_to_menu:
+                        # User clicked "Back" in login; stay in login menu
+                        pass
                 elif signup_hover:
-                    signup(WIN, WIDTH, HEIGHT, BROWN, WHITE)
-
+                    signup_completed = signup(WIN, WIDTH, HEIGHT, BROWN, WHITE)
+                    if not signup_completed:
+                        # User clicked "Back" in signup; stay in login menu
+                        pass
+        # We don't need to return logged_in here, as it's updated in place
     print("Exiting Login Menu...")  # Debug
     return logged_in  # Return the updated logged_in status
 
