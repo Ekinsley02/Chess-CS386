@@ -127,7 +127,7 @@ int main()
       highlightAttack( board, start_row, start_col, currentType, currentTurn, DEHIGHLIGHT, currentState, initialPawn );
    
       currentState = MOVING;
-      
+
       if( isInCheck( board, currentTurn, INCHECK ) )
          {
          
@@ -135,7 +135,7 @@ int main()
          }
         
       // Process the move if valid for moving
-      if( ( inCheck && putsOutOfCheck( board, currentType, start_row, start_col, end_row, end_col, currentTurn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, end_row, end_col, &currentState, initialPawn ) ) )
+      if( (inCheck && putsOutOfCheck( board, currentType, start_row, start_col, end_row, end_col, currentTurn, initialPawn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, start_row, start_col, end_row, end_col, &currentState, initialPawn ) ) )
          {
             
          if( !putsOwnKingInCheck( board, currentTurn, start_row, start_col, end_row, end_col ) )
@@ -145,14 +145,19 @@ int main()
             
             currentTurn = switchTurn( currentTurn );  
 
-            if( !isCheckmate( board, currentTurn, NONE ) )
+            if( isInCheck( board, currentTurn, INCHECK ) )
+               {
+               
+               inCheck = true;
+               }
+
+            if( inCheck && !isCheckmate( board, currentTurn, NONE ) )
                {  
          
                gameCondition = 1;
                }
-      
-      
-            else if( isStalemate( board, currentTurn ) )
+            
+            else if( !inCheck && isStalemate( board, currentTurn ) )
                {
         
                gameCondition = 2;
