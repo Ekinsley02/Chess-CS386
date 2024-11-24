@@ -390,6 +390,7 @@ async def main( c_engine ):
                     # check to see if the selected side is current player
                     # and not empty (no pieces)
                     if selected_side == game_state.current_player and game_state.selected_piece != 'X':
+                        
                         # keep track of initial position
                         game_state.move_from = (row, col)
 
@@ -412,6 +413,7 @@ async def main( c_engine ):
                     else:
                         game_state.selected_piece = None
                         game_state.selected_pos = None
+
                 # otherwise, its in the moving state (post selecting)
                 else:
                     # assign the end row/col (where the user selected)
@@ -422,6 +424,7 @@ async def main( c_engine ):
                     
                     # **Check for game over condition immediately**
                     if game_state.game_condition in [1, 2]:
+
                         # Handle game over conditions
                         game_state.board = game_state.new_board if game_state.new_board else game_state.board
                         game_state.sides = game_state.new_sides if game_state.new_sides else game_state.sides
@@ -436,7 +439,7 @@ async def main( c_engine ):
                         draw_game_condition(WIN, game_state.game_condition)
                         
                         pygame.display.update()
-                        await asyncio.sleep(3)
+                        await asyncio.sleep(10)
                         run = False  # End the game loop
                         break  # Exit the event handling loop
 
@@ -444,6 +447,7 @@ async def main( c_engine ):
                     if game_state.new_board and not boards_are_equal(game_state.new_board, game_state.board):
                         # Move was valid, update the boards in game_state
                         game_state.update_board(game_state.new_board, game_state.new_sides, game_state.new_highlights)
+
 
                         print("After move:")
                         print_board_state(game_state.board, game_state.sides)
@@ -460,13 +464,6 @@ async def main( c_engine ):
                     game_state.selected_piece = None
                     game_state.move_from = None
                     game_state.selected_pos = None
-
-        print("\nTESTING:")
-        for row_index in range(len(game_state.sides)):
-            for col_index in range(len(game_state.sides[row_index])):
-                print("{}".format(game_state.sides[row_index][col_index]), end=' ')
-            print()  # Move to the next line after each row
-        print("\n")
         
         # Draw everything
         draw_chessboard( WIN )
