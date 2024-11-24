@@ -166,7 +166,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       // not entirely sure why I needed to do this
          // this is because the checking function is a little funky
             // I wouldn't touch it
-   currentTurn = determineOppositeSide(currentTurn);
+   // currentTurn = determineOppositeSide(currentTurn);
 
    // check if top left is available
    if( initialRow > 0 && initialCol > 0 && board[ initialRow - 1 ][ initialCol - 1 ].side != currentTurn )
@@ -1036,14 +1036,14 @@ bool checkKingPositions( ChessBoardType **board, char currentTurn, int currentRo
                // determine whether the piece is being highlighted
                if( *currentState == MOVING )
                	   {
-				   // dehighlight the king
+                     // dehighlight the king
                	   board[ initialRow ][ initialCol - 2 ].castlePos = false;
 
-				   // move the rook and return true
-	               rooksInitialRow = BOARD_SIZE - 1;
-  	      	      rooksInitialCol = 0;
-          		   rooksCurrentCol = BOARD_SIZE - 5;
-               	   movePiece( board, currentTurn, rooksInitialRow, rooksCurrentCol, *currentState, rooksInitialRow, rooksInitialCol );
+                  // move the rook and return true
+                     rooksInitialRow = BOARD_SIZE - 1;
+                     rooksInitialCol = 0;
+                     rooksCurrentCol = BOARD_SIZE - 5;
+                     movePiece( board, currentTurn, rooksInitialRow, rooksCurrentCol, *currentState, rooksInitialRow, rooksInitialCol );
                	   }
 
                else if( *currentState == SELECTING )

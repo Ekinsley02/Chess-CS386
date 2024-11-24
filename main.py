@@ -30,6 +30,7 @@ CREAM = (238, 238, 210)
 MENU = 'MENU'
 GAME = 'GAME'
 ENDED = 'ENDED'
+LOGIN_MENU = 'LOGIN_MENU'
 
 logged_in = False 
 
@@ -38,6 +39,8 @@ HIGHLIGHT_COLOR = (0, 255, 0, 100)
 
 # Red borer for selected piece
 SELECTED_COLOR = (255, 0, 0)
+
+game_state = GameState()
 
 # Remap chess pieces from C program
 C_PIECE_TO_PYGAME = {
@@ -80,8 +83,6 @@ WIN = pygame.display.set_mode( ( WIDTH, HEIGHT ) )
 
 # set the window caption to chess
 pygame.display.set_caption('Chess')
-
-game_state = GameState()
 
 # Function name: draw_chessboard
 # Process: creates a board of squares for rows and columns (8 for both)
@@ -308,24 +309,33 @@ def boards_are_equal(board1, board2):
         
     return True
 
-
 # Function name: main (with debug added)
 # Process: creates a main game loop and handles events accordingly
 # Input: pieces, sides, and highlight board states (2D arrays), c_engine (subproccess)
 # Output: board conditions to terminal
 # Dependencies: print
 async def main( c_engine ):
+    """Main function to handle game states."""
+    global logged_in  # If you need to modify the global variable
+    while True:
+        print(f"Current game state: {game_state.state}")  # Debug: Log current state
 
-    # create a clock for framerate
-    clock = pygame.time.Clock()
+        if game_state.state == LOGIN_MENU:
+            print("Entering Login Menu...")  # Debug
+            logged_in = menu.login_menu(WIN, WIDTH, HEIGHT, BROWN, CREAM, BLACK, WHITE, game_state, logged_in)
+            print(f"Exited Login Menu. Current state: {game_state.state}")  # Debug
 
-    # initilaize local variables
+        if game_state.state == MENU:
+            print("Entering Main Menu...")  # Debug
+            menu.main_menu(WIN, WIDTH, HEIGHT, BROWN, CREAM, BLACK, WHITE, game_state)
+
+        if game_state.state == GAME:
+            print("Starting the Chess Game...")  # Debug
+            break
+
+    # Start the chess game logic here
     run = True
-
-    menu.main_menu()
-
-    if game_state.state == GAME:
-        printf("Starting the game")
+    clock = pygame.time.Clock()
 
     # this is the main game loop to handle conditions
     while run:
@@ -355,6 +365,7 @@ async def main( c_engine ):
 
                 # check to see if this is the first click (selecting)
                 if not game_state.selected_piece:
+
                     # get the current piece type
                     game_state.selected_piece = game_state.board[row][col]
 
@@ -413,7 +424,7 @@ async def main( c_engine ):
                         draw_game_condition(WIN, game_state.game_condition)
                         
                         pygame.display.update()
-                        await asyncio.sleep(10)
+                        await asyncio.sleep(3)
                         run = False  # End the game loop
                         break  # Exit the event handling loop
 
