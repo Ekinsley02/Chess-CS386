@@ -1,5 +1,4 @@
-#define constants
-MENU = 'MENU'
+import constants
 
 class GameState:
     def __init__(self):
@@ -21,7 +20,7 @@ class GameState:
         self.current_player = 'P'
         self.game_condition = 0
 
-        self.state = MENU
+        self.state = constants.LOGIN_MENU
 
     def update_board( self, board, sides, highlights ):
         

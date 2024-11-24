@@ -322,7 +322,10 @@ async def main( c_engine ):
 
         if game_state.state == LOGIN_MENU:
             print("Entering Login Menu...")  # Debug
-            logged_in = menu.login_menu(WIN, WIDTH, HEIGHT, BROWN, CREAM, BLACK, WHITE, game_state, logged_in)
+            logged_in = menu.login_menu(
+                WIN, WIDTH, HEIGHT, BROWN, CREAM, BLACK, WHITE, game_state, logged_in
+            )
+            
             print(f"Exited Login Menu. Current state: {game_state.state}")  # Debug
 
         if game_state.state == MENU:
