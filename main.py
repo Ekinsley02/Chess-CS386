@@ -3,7 +3,7 @@ import pygame
 from SubProcess import ChessEngine
 import sys
 import asyncio
-import time
+import menu
 from GameState import GameState
 
 # Initialize pygame
@@ -31,6 +31,7 @@ MENU = 'MENU'
 GAME = 'GAME'
 ENDED = 'ENDED'
 
+logged_in = False 
 
 # Transparent green backround
 HIGHLIGHT_COLOR = (0, 255, 0, 100)
@@ -307,35 +308,6 @@ def boards_are_equal(board1, board2):
         
     return True
 
-def main_menu():
-    menu_run = True
-    while menu_run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    menu_run = False
-                elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-        
-        WIN.fill(BROWN)
-        
-        font = pygame.font.Font(None, 74)
-        title_text = font.render("Chess Game", True, WHITE)
-        instruction_text = pygame.font.Font(None, 36).render("Press Enter to Start", True, WHITE)
-        
-        title_rect = title_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
-        instruction_rect = instruction_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 10))
-        
-        WIN.blit(title_text, title_rect)
-        WIN.blit(instruction_text, instruction_rect)
-        
-        game_state.state = GAME
-        pygame.display.update()
-
 
 # Function name: main (with debug added)
 # Process: creates a main game loop and handles events accordingly
@@ -350,8 +322,10 @@ async def main( c_engine ):
     # initilaize local variables
     run = True
 
-    while( game_state.state == MENU ):
-        main_menu()
+    menu.main_menu()
+
+    if game_state.state == GAME:
+        printf("Starting the game")
 
     # this is the main game loop to handle conditions
     while run:
@@ -390,7 +364,7 @@ async def main( c_engine ):
                     # check to see if the selected side is current player
                     # and not empty (no pieces)
                     if selected_side == game_state.current_player and game_state.selected_piece != 'X':
-                        
+
                         # keep track of initial position
                         game_state.move_from = (row, col)
 
