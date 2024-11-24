@@ -162,6 +162,12 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
                                                 char currentType, int currentState, int initialRow, int initialCol )
    {
    
+   // This flips the turn for checking all valid king positions
+      // not entirely sure why I needed to do this
+         // this is because the checking function is a little funky
+            // I wouldn't touch it
+   currentTurn = determineOppositeSide(currentTurn);
+
    // check if top left is available
    if( initialRow > 0 && initialCol > 0 && board[ initialRow - 1 ][ initialCol - 1 ].side != currentTurn )
       {
@@ -185,7 +191,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
 
    // check if top middle is available
-   else if( initialRow > 0 && board[ initialRow - 1 ][ initialCol ].side != currentTurn )
+   if( initialRow > 0 && board[ initialRow - 1 ][ initialCol ].side != currentTurn )
       {
       
       // project moving the king
@@ -207,7 +213,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
         
    // check if top right is available
-   else if( initialRow > 0 && initialCol < BOARD_SIZE - 1 && board[ initialRow - 1 ][ initialCol + 1 ].side != currentTurn )
+   if( initialRow > 0 && initialCol < BOARD_SIZE - 1 && board[ initialRow - 1 ][ initialCol + 1 ].side != currentTurn )
       {
         
       // project moving the king
@@ -227,7 +233,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
         
    // check if left of king is available
-   else if( initialCol > 0 && board[ initialRow ][ initialCol - 1 ].side != currentTurn )
+   if( initialCol > 0 && board[ initialRow ][ initialCol - 1 ].side != currentTurn )
       {
       
       // project moving the king
@@ -247,7 +253,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
 
    // check if right of king is available and won't put in check
-   else if( initialCol < BOARD_SIZE - 1 && board[ initialRow ][ initialCol + 1 ].side != currentTurn )
+   if( initialCol < BOARD_SIZE - 1 && board[ initialRow ][ initialCol + 1 ].side != currentTurn )
       {
 
       // project moving the king
@@ -267,7 +273,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
 
    // check if bottom left is available and won't put in check
-   else if( initialRow < BOARD_SIZE - 1 && initialCol > 0 && board[ initialRow + 1 ][ initialCol - 1 ].side != currentTurn )
+   if( initialRow < BOARD_SIZE - 1 && initialCol > 0 && board[ initialRow + 1 ][ initialCol - 1 ].side != currentTurn )
       {
       
       // project moving the king
@@ -287,11 +293,11 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
         
    // check if bottom middle is available and won't put in check
-   else if( initialRow < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol ].side != currentTurn )
+   if( initialRow < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol ].side != currentTurn )
       {
       
       // project moving the king
-      pieceMoveHelper( checkedBoard, initialRow, initialCol, initialRow + 1, initialCol - 1, currentType, currentTurn );
+      pieceMoveHelper( checkedBoard, initialRow, initialCol, initialRow + 1, initialCol, currentType, currentTurn );
       
       if( !isInCheck( checkedBoard, currentTurn, INCHECK ) )
          {
@@ -307,7 +313,7 @@ bool checkAllValidKingPositions( ChessBoardType **board, ChessBoardType **checke
       }
       
   // check if bottom right is available and won't put in check
-  else if( initialRow < BOARD_SIZE - 1 && initialCol < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol + 1 ].side != currentTurn )
+  if( initialRow < BOARD_SIZE - 1 && initialCol < BOARD_SIZE - 1 && board[ initialRow + 1 ][ initialCol + 1 ].side != currentTurn )
       {
         
       // project moving the king
@@ -603,16 +609,15 @@ bool checkAllValidPawnPositions( ChessBoardType **board, ChessBoardType **checke
 		{
 
 		currentRow = initialRow - 1;
-      currentCol = initialCol - 1;
+      currentCol = initialCol;
 	   }
 
    else
       {
 
 		currentRow = initialRow + 1;
-      currentCol = initialCol + 1;
+      currentCol = initialCol;
 		}
-
 
 	if( checkIfValidPosition( checkedBoard, currentType, currentTurn, initialRow, initialCol, currentRow, currentCol, &currentState, false ) )
 		{
@@ -1036,7 +1041,7 @@ bool checkKingPositions( ChessBoardType **board, char currentTurn, int currentRo
 
 				   // move the rook and return true
 	               rooksInitialRow = BOARD_SIZE - 1;
-  	      	       rooksInitialCol = 0;
+  	      	      rooksInitialCol = 0;
           		   rooksCurrentCol = BOARD_SIZE - 5;
                	   movePiece( board, currentTurn, rooksInitialRow, rooksCurrentCol, *currentState, rooksInitialRow, rooksInitialCol );
                	   }
@@ -1424,6 +1429,7 @@ Dependancies: NONE
 
 bool checkPawnPositions( ChessBoardType **board, char currentTurn, int currentRow, int currentCol, int initialRow, int initialCol, int *currentState, bool initialPawn  )
     {
+
     // initialize functions/variables
         bool isQueen = false, isBattleValid = false, isPassiveValid = false;
         
@@ -1443,15 +1449,33 @@ bool checkPawnPositions( ChessBoardType **board, char currentTurn, int currentRo
             }
         
         // if the pawn is moved to the end, make queen
-        if( currentRow == 0 )
+        if( currentRow == 0 && initialRow == 1)
            {
            
-           board[ currentRow ][ currentCol ].type = QUEEN;
-           board[ currentRow ][ currentCol ].side = 'P';
-           board[ initialRow ][ initialCol ].type = 'X';
-           board[ initialRow ][ initialCol ].side = NON_PLAYER;
-           isQueen = true;
-           return true;
+           if( ( initialCol == currentCol - 1 && board[ currentRow ][ currentCol ].side == 'O' ) ||
+               ( initialCol == currentCol + 1 && board[ currentRow ][ currentCol ].side == 'O' ) )
+               {
+
+               board[ currentRow ][ currentCol ].type = QUEEN;
+               board[ currentRow ][ currentCol ].side = 'P';
+               board[ initialRow ][ initialCol ].type = 'X';
+               board[ initialRow ][ initialCol ].side = NON_PLAYER;
+               isQueen = true;
+               return true;
+               }
+            
+            if( currentCol == initialCol && board[ currentRow ][ currentCol ].type == 'X' )
+               {
+               
+               board[ currentRow ][ currentCol ].type = QUEEN;
+               board[ currentRow ][ currentCol ].side = 'P';
+               board[ initialRow ][ initialCol ].type = 'X';
+               board[ initialRow ][ initialCol ].side = NON_PLAYER;
+               isQueen = true;
+               return true;
+               }
+
+            return false;
            }
            
         // Check if the pawn is in battle position
@@ -1502,16 +1526,34 @@ bool checkPawnPositions( ChessBoardType **board, char currentTurn, int currentRo
         }
         
         // if the pawn is moved to the end, make queen
-        if( currentRow == BOARD_SIZE - 1 )
+        if( currentRow == BOARD_SIZE - 1 && initialRow == currentRow - 1)
            {
-        
-           board[ currentRow ][ currentCol ].type = QUEEN;
-           board[ currentRow ][ currentCol ].side = 'O';
-           board[ initialRow ][ initialCol ].type = 'X';
-           board[ initialRow ][ initialCol ].side = NON_PLAYER;
-           isQueen = true;
-           return true;
+            if( ( initialCol == currentCol - 1 && board[ currentRow ][ currentCol ].side == 'P' ) ||
+                  ( initialCol == currentCol + 1 && board[ currentRow ][ currentCol ].side == 'P' ) )
+                  {
+
+                  board[ currentRow ][ currentCol ].type = QUEEN;
+                  board[ currentRow ][ currentCol ].side = 'O';
+                  board[ initialRow ][ initialCol ].type = 'X';
+                  board[ initialRow ][ initialCol ].side = NON_PLAYER;
+                  isQueen = true;
+                  return true;
+                  }
+
+            if( currentCol == initialCol && board[ currentRow ][ currentCol ].type == 'X' )
+               {
+               
+               board[ currentRow ][ currentCol ].type = QUEEN;
+               board[ currentRow ][ currentCol ].side = 'O';
+               board[ initialRow ][ initialCol ].type = 'X';
+               board[ initialRow ][ initialCol ].side = NON_PLAYER;
+               isQueen = true;
+               return true;
+               }
+
+            return false;
            }
+
 
         // Check if the pawn is in battle position
         if( isQueen == false && ( ( *currentState == SELECTING && 
