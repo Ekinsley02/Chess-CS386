@@ -847,6 +847,7 @@ bool isInCheck(ChessBoardType **board, char turn, char checkCode)
                        }
                     }
                }
+               
             if( checkCode == INCHECK )
                {
                   
@@ -1106,19 +1107,21 @@ Input: board, initialRow, initialCol, chosenRow, chosenCol
 Output: if the players move will put the king into check
 Dependancies: isInCheck
 */
-bool putsOutOfCheck( ChessBoardType **board, char currentType, int initialRow, int initialCol, int currentRow, int currentCol, char currentTurn )
+bool putsOutOfCheck( ChessBoardType **board, char currentType, int initialRow, int initialCol, int currentRow, int currentCol, char currentTurn, bool initialPawn )
    {
    // intiialize functions/variables
       ChessBoardType **checkedBoard;
-      
+   
+   int currentState = MOVING;
+
    checkedBoard = initializeChessBoard( BOARD_SIZE, BOARD_SIZE );
    
    copyBoard( checkedBoard, board );
    
    pieceMoveHelper( checkedBoard, initialRow, initialCol, currentRow, currentCol, currentType, currentTurn );
 
-   
-   if( !isInCheck( checkedBoard, currentTurn, INCHECK ) )
+   if( !isInCheck( checkedBoard, currentTurn, INCHECK ) && currentRow != initialRow && currentCol != initialCol && checkIfValidPosition( checkedBoard, currentType,
+                           currentTurn, initialRow, initialCol, currentRow, currentCol, &currentState, initialPawn ))
       {
       
       return true;
@@ -1228,7 +1231,7 @@ void selectNextPosition(ChessBoardType **board, char currentType,
    
 
    // check if valid position using moving piece conditions
-   if( ( inCheck && putsOutOfCheck( board, currentType, initialRow, initialCol, currentRow, currentCol, currentTurn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, initialRow, initialCol, currentRow, colIndex, &currentState, initialPawn ) ) )
+   if( ( inCheck && putsOutOfCheck( board, currentType, initialRow, initialCol, currentRow, currentCol, currentTurn, initialPawn ) ) || ( checkIfValidPosition( board, currentType, currentTurn, initialRow, initialCol, currentRow, colIndex, &currentState, initialPawn ) ) )
       {
          
       if( !putsOwnKingInCheck( board, currentTurn, initialRow, initialCol, currentRow, colIndex ) )
