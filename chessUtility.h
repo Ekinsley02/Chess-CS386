@@ -118,7 +118,7 @@ checkmate finished, all I need to do now is checkmate for starting pawns, make i
 #define BATTLE 1
 #define BOTH 3
 #define CHECK 4
-#define STALEMATE 4
+#define STALEMATE 5
 
 // create an empty flag
 #define NONE -3
@@ -445,7 +445,7 @@ Input: board, initialRow, initialCol, chosenRow, chosenCol
 Output: if the players move will put the king into check
 Dependancies: isInCheck
 */
-bool putsOutOfCheck( ChessBoardType **board, char currentType, int initialRow, int initialCol, int currentRow, int currentCol, char currentTurn );
+bool putsOutOfCheck( ChessBoardType **board, char currentType, int initialRow, int initialCol, int currentRow, int currentCol, char currentTurn, bool initialPawn );
 
 /*
 Description: creates a new board with the players given move and analyses if it would put the king into check
