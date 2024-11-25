@@ -6,6 +6,10 @@ import asyncio
 import menu
 from GameState import GameState
 
+##### Libraries for SQL Database #####
+from database_utils import save_current_board
+######################################
+
 # Initialize pygame
 pygame.init()
 
@@ -442,6 +446,9 @@ async def main( c_engine ):
 
                         # Switch to the other player
                         game_state.switch_player()
+
+                        save_current_board(game_state)
+                        print( "{---SQL---} Saved Current Board to Database\n")
 
                     else:
                         # Move was invalid, allow the player to try again without resetting selection

@@ -1,25 +1,115 @@
-import json
+#import json
+
 import os
 import pygame
 import sys  # Added to use sys.exit()
 
+### Added Libraries - SQL ###
+from connection import Connection
+from connection import Config
+#############################
+
+################### commented JSON code ##################
 # JSON file to store user credentials
-CREDENTIALS_FILE = "user_data.json"
+#CREDENTIALS_FILE = "user_data.json"
 
 # Initialize the credentials file if it doesn't exist
-if not os.path.exists(CREDENTIALS_FILE):
-    with open(CREDENTIALS_FILE, "w") as file:
-        json.dump({}, file)
+# if not os.path.exists(CREDENTIALS_FILE):
+#     with open(CREDENTIALS_FILE, "w") as file:
+#         json.dump({}, file)
 
+# def load_credentials():
+#     """Load user credentials from the JSON file."""
+#     with open(CREDENTIALS_FILE, "r") as file:
+#         return json.load(file)
+
+# def save_credentials(credentials):
+#     """Save user credentials to the JSON file."""
+#     with open(CREDENTIALS_FILE, "w") as file:
+#         json.dump(credentials, file)
+###### END OF commented JSON code       ##################
+
+
+
+
+
+################### Begining of User SQL Implementation ###################
 def load_credentials():
-    """Load user credentials from the JSON file."""
-    with open(CREDENTIALS_FILE, "r") as file:
-        return json.load(file)
+    # Load user credentials from the database #
+    print("[DEBUG] Starting to load credentials from the database.")  # Debug
+    config_dic = Config.dbinfo()
+    connection = Connection(config_dic)
 
+    try:
+        print("[DEBUG] Opening database connection...")  # Debug
+        connection.open_conn()
+        cursor = connection.get_cursor()
+        print("[DEBUG] Database connection opened successfully.")  # Debug
+
+        # Fetch all players from the Players table
+        print("[DEBUG] Executing query to fetch player credentials.")  # Debug
+        cursor.execute("SELECT player_name, password FROM Players")
+        result = cursor.fetchall()
+        print(f"[DEBUG] Query executed successfully. Retrieved {len(result)} players.")  # Debug
+
+        # Convert the result into a dictionary
+        credentials = {row[0]: row[1] for row in result}
+        print(f"[DEBUG] Converted database results into a dictionary: {credentials}")  # Debug
+        return credentials
+
+    except Exception as e:
+        print(f"[ERROR] Could not load credentials: {e}")  # Debug
+        return {}
+
+    finally:
+        print("[DEBUG] Closing database connection...")  # Debug
+        connection.close_conn()
+        print("[DEBUG] Database connection closed.")  # Debug
+
+
+#### Save User Credentials to Current_User Table
 def save_credentials(credentials):
-    """Save user credentials to the JSON file."""
-    with open(CREDENTIALS_FILE, "w") as file:
-        json.dump(credentials, file)
+    """
+    Save user credentials to the database.
+
+    :param credentials: A dictionary with username-password pairs.
+    """
+    print("[DEBUG] Starting to save credentials to the database.")  # Debug
+    config_dic = Config.dbinfo()
+    connection = Connection(config_dic)
+
+    try:
+        print("[DEBUG] Opening database connection...")  # Debug
+        connection.open_conn()
+        cursor = connection.get_cursor()
+        print("[DEBUG] Database connection opened successfully.")  # Debug
+
+        # Insert each username-password pair into the Players table
+        for username, password in credentials.items():
+            print(f"[DEBUG] Attempting to save credentials for user: {username}")  # Debug
+            try:
+                cursor.execute(
+                    "INSERT INTO Players (player_name, password) VALUES (%s, %s)",
+                    (username, password)
+                )
+                print(f"[DEBUG] Credentials for user '{username}' saved successfully.")  # Debug
+            except Exception as e:
+                print(f"[WARNING] Could not save credentials for {username}: {e}")  # Debug
+
+        print("[DEBUG] Committing changes to the database.")  # Debug
+        connection.commit_changes()
+        print("[DEBUG] All credentials saved successfully.")  # Debug
+
+    except Exception as e:
+        print(f"[ERROR] Could not save credentials: {e}")  # Debug
+
+    finally:
+        print("[DEBUG] Closing database connection...")  # Debug
+        connection.close_conn()
+        print("[DEBUG] Database connection closed.")  # Debug
+
+###################   END of User SQL Implementation    ###################
+
 
 def get_text_input(WIN, WIDTH, HEIGHT, BROWN, WHITE, prompt, y_offset):
     """Get text input from the user in the Pygame window."""
