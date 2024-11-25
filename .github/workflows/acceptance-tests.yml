@@ -1,0 +1,71 @@
+name: Run Pygame Acceptance Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run_acceptance_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            xvfb \
+            libgtk-3-0 \
+            libnotify-dev \
+            libgconf-2-4 \
+            libnss3 \
+            libxss1 \
+            libasound2 \
+            xauth \
+            x11-utils
+
+      - name: Set up X11 environment
+        run: |
+          # Start Xvfb with screen 0 at 1024x768x16
+          Xvfb :99 -screen 0 1024x768x16 &
+
+          # Set DISPLAY environment variable for all subsequent steps
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+
+          # Set Xauthority if required by some operations
+          touch /tmp/.Xauthority
+          echo "XAUTHORITY=/tmp/.Xauthority" >> $GITHUB_ENV
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pygame pyautogui mysql-connector-python
+
+      - name: Set up the database
+        run: |
+          python Database_Creation.py
+          python CreateDatabaseUserMysql.py
+
+      - name: Make chess.exe executable
+        run: chmod +x ./chess.exe
+
+      - name: Run acceptance tests
+        run: |
+          python -m unittest discover -s acceptance_tests/ -p "*.py"
+
+      - name: Print logs after test failures
+        if: failure()
+        run: |
+          echo "Printing log files for debugging"
+          cat /home/runner/work/Chess-CS386/Chess-CS386/logs/*.log || echo "No logs found"
