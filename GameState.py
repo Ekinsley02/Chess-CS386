@@ -27,6 +27,9 @@ class GameState:
         self.board = board
         self.sides = sides
         self.highlights = highlights
+
+    def is_game_over(self):
+        return self.game_condition == 1
     
     def reset_selection( self ):
 
